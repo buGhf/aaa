@@ -10,7 +10,7 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         :root {
             --bg-color: #000000;
-            --card-bg: #1c1c1e;
+            --card-bg: #1c1c1e; /* Базовый цвет, но мы его улучшим градиентом */
             --text-primary: #ffffff;
             --text-secondary: #8e8e93;
             --accent-color: #0a84ff;
@@ -40,12 +40,27 @@
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- КАРТОЧКИ --- */
+        /* --- КАРТОЧКИ (НОВЫЙ СТИЛЬ iOS REFLECTION) --- */
         .card {
-            background: var(--card-bg);
-            border-radius: 14px; overflow: hidden;
-            margin-bottom: 24px; position: relative;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            /* Легкий градиент фона для объема */
+            background: linear-gradient(180deg, rgba(35,35,37,1) 0%, rgba(28,28,30,1) 100%);
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: 24px;
+            position: relative;
+            
+            /* --- МАГИЯ БЛИКОВ И ОБВОДКИ --- */
+            /* 1. Тончайшая физическая рамка 0.5px */
+            border: 0.5px solid rgba(255, 255, 255, 0.08);
+            
+            /* 2. Сложные тени для эффекта стекла */
+            box-shadow: 
+                /* Внутренний яркий блик сверху (отражение света) */
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.15),
+                /* Внутреннее мягкое свечение по бокам */
+                inset 0 0 0 1px rgba(255, 255, 255, 0.03),
+                /* Глубокая внешняя тень для отрыва от фона */
+                0 8px 24px rgba(0, 0, 0, 0.4);
         }
         .card-body { padding: 16px; }
         .card-title { font-size: 19px; font-weight: 700; margin-bottom: 8px; line-height: 1.2; }
@@ -58,82 +73,38 @@
         }
 
         /* --- УМНЫЙ ПЛЕЕР (МАСКА) --- */
-        .video-facade {
-            position: relative;
-            padding-bottom: 56.25%; /* 16:9 */
-            height: 0;
-            background-color: #000;
-            cursor: pointer;
-            overflow: hidden;
-        }
-        
-        /* Обложка (теперь ищет локальный файл) */
-        .video-cover-img {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover;
-            opacity: 0.9;
-            transition: opacity 0.3s;
-        }
-
-        /* Кнопка Play */
+        .video-facade { position: relative; padding-bottom: 56.25%; height: 0; background-color: #000; cursor: pointer; overflow: hidden; }
+        .video-cover-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.9; transition: opacity 0.3s; }
         .play-button {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 60px; height: 60px;
-            background: rgba(255, 255, 255, 0.15);
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 60px; height: 60px; background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            border: 1px solid rgba(255,255,255,0.3);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-            transition: transform 0.2s, background 0.2s;
-            z-index: 2;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            transition: transform 0.2s, background 0.2s; z-index: 2;
         }
-        .play-button::after {
-            content: ''; display: block;
-            width: 0; height: 0;
-            border-left: 18px solid #fff;
-            border-top: 10px solid transparent;
-            border-bottom: 10px solid transparent;
-            margin-left: 4px;
-        }
+        .play-button::after { content: ''; display: block; width: 0; height: 0; border-left: 18px solid #fff; border-top: 10px solid transparent; border-bottom: 10px solid transparent; margin-left: 4px; }
         .video-facade:active .play-button { transform: translate(-50%, -50%) scale(0.9); background: rgba(255,255,255,0.25); }
         .video-facade iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; z-index: 10; }
 
-        /* --- АУДИО И ОФОРМЛЕНИЕ ТЕКСТА (НОВОЕ) --- */
+        /* --- АУДИО И ТЕКСТ --- */
         audio { width: 100%; height: 40px; margin-top: 5px; }
         details { background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; }
         summary { padding: 12px; cursor: pointer; font-weight: 600; color: var(--accent-color); list-style: none; display: flex; justify-content: space-between; align-items: center; }
         summary::after { content: '+'; font-size: 18px; }
         details[open] summary::after { content: '-'; }
-        
-        .text-content {
-            padding: 16px;
-            font-size: 16px;
-            line-height: 1.6;
-            color: #d1d1d6;
-            border-top: 1px solid rgba(255,255,255,0.05);
-        }
-        /* Стиль для жирного текста */
+        .text-content { padding: 16px; font-size: 16px; line-height: 1.6; color: #d1d1d6; border-top: 1px solid rgba(255,255,255,0.05); }
         .text-content b { color: #ffffff; font-weight: 700; }
-        /* Стиль для курсива (цитаты, мысли) */
         .text-content i { color: var(--text-secondary); font-style: italic; }
-        /* Стиль для списков */
         .text-content ul { padding-left: 20px; margin: 15px 0; }
         .text-content li { margin-bottom: 10px; }
-        /* Стиль для выделения (маркер) */
-        .highlight {
-            color: var(--accent-color);
-            font-weight: 600;
-        }
+        .highlight { color: var(--accent-color); font-weight: 600; }
 
         /* --- МЕНЮ --- */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; width: 100%; height: 83px;
             background: rgba(28, 28, 30, 0.90); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-top: 0.5px solid var(--separator);
-            display: flex; justify-content: space-around; padding-top: 10px; z-index: 1000;
+            border-top: 0.5px solid var(--separator); display: flex; justify-content: space-around; padding-top: 10px; z-index: 1000;
         }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: #8e8e93; font-size: 10px; font-weight: 500; width: 60px; cursor: pointer; transition: color 0.2s; }
         .nav-item svg { width: 28px; height: 28px; margin-bottom: 4px; fill: currentColor; }
@@ -246,20 +217,11 @@
                     <summary>Читать</summary>
                     <div class="text-content">
                         Представь ситуацию:<br><br>
-                        
-                        <ul>
-                            <li>Ты приехал на заправку, оплатил ее и 90% топлива ты сливаешь на асфальт, не в бак.</li>
-                        </ul>
-                        
+                        <ul><li>Ты приехал на заправку, оплатил ее и 90% топлива ты сливаешь на асфальт, не в бак.</li></ul>
                         <i>Чувствуешь? Не приятно, ты ведь заплатил - а получилось что зря.</i><br><br>
-                        
                         <b>Так вот, ты — машина.</b> В начале дня ты полон энергии, но тратишь ее не на те вещи. Ты скролишь ленту, др()чишь, выпиваешь и думаешь:<br><br>
-                        
-                        <i>«Окей, 4 часа дня. Еще время есть. Сяду за работу к 5».</i><br>
-                        Потом в 5 ты решил позвонить кентам, разговор затянулся и выходит что уже 7 часов.<br><br>
-                        
+                        <i>«Окей, 4 часа дня. Еще время есть. Сяду за работу к 5».</i><br>Потом в 5 ты решил позвонить кентам, разговор затянулся и выходит что уже 7 часов.<br><br>
                         Как так? Я же недавно, вроде бы, встал с кровати. Ты заставляешь себя сесть работать, но фокуса уже нет. Делаешь базовые задачи в работе, может даже не все. А может вообще создаешь видимость работы, для того чтобы “искусственно” заставить не винить себя.<br><br>
-                        
                         <span class="highlight">Какой вывод?</span>
                         <ul>
                             <li>20% забрал тик ток</li>
@@ -268,20 +230,11 @@
                             <li>10% забрали рутинные дела</li>
                             <li><b>10% осталось</b></li>
                         </ul>
-                        
                         В итоге: не закрытый день, не сдвиг с места, план переносится на завтра.<br><br>
-                        
                         Ты думаешь, что я описал стандартный пример неудачника. Но никто не считает себя таким, а в конце дня испытывает злость на себя и чувство слабости.<br><br>
-                        
                         У каждого свои отвлечения, суть в том что они есть. Соблазны у каждого - суть в том, чтобы их сконтролировать.<br><br>
-                        
-                        <b>Как?</b><br>
-                        Не убирать их навсегда, а временно. Пока ты не сделаешь то-то и то-то...<br>
-                        Не покуришь сигарету, пока не закроешь сделку. Не посмотришь фильм, пока не закроешь дневной план.<br><br>
-                        
-                        Или цель: Купить мотоцикл.<br>
-                        <i>”Я не буду скачивать тик ток, инсту (если не нужно для работы) пока не куплю мотоцикл”</i><br><br>
-                        
+                        <b>Как?</b><br>Не убирать их навсегда, а временно. Пока ты не сделаешь то-то и то-то...<br>Не покуришь сигарету, пока не закроешь сделку. Не посмотришь фильм, пока не закроешь дневной план.<br><br>
+                        Или цель: Купить мотоцикл.<br><i>”Я не буду скачивать тик ток, инсту (если не нужно для работы) пока не куплю мотоцикл”</i><br><br>
                         <span class="highlight">Сделайте зависимость стимулом.</span>
                     </div>
                 </details>
@@ -295,23 +248,12 @@
                     <summary>Читать</summary>
                     <div class="text-content">
                         Тут тонкая грань между постоянным общением и навязчивостью.<br><br>
-
                         Мы говорим про построение связей с уже успешными людьми в вашей нише для получение опыта и информации. <b>Взаимовыгода.</b><br><br>
-                        
                         Вы должны предложить человеку что-то ценное, чтобы он тоже получил хоть и минимальный, но импакт. Ведь если хотите созвониться/встретиться с человеком выше вас по рангу, вам нужно его заинтересовать.<br><br>
-                        
-                        <span class="highlight">Как это сделать?</span><br>
-                        Важно не спрашивать "чем я могу быть полезен", а сразу предложить готовое решение.<br><br>
-                        
-                        <b>Пример:</b><br>
-                        Если у вас есть подписчики в инсте/тг можете предложить рекламу сервиса, бизнеса взамен разговора. Вот и прелесть медийки, самый простой способ.<br><br>
-                        
+                        <span class="highlight">Как это сделать?</span><br>Важно не спрашивать "чем я могу быть полезен", а сразу предложить готовое решение.<br><br>
+                        <b>Пример:</b><br>Если у вас есть подписчики в инсте/тг можете предложить рекламу сервиса, бизнеса взамен разговора. Вот и прелесть медийки, самый простой способ.<br><br>
                         В других случаях нужно отталкиваться от вашего навыка и предлагать, возможно, вариант улучшения бизнеса человека или доработать что-то. Суть в том, чтобы не давать ощущение "бесплатной работы".<br><br>
-                        
-                        <b>Шаблон сообщения:</b><br>
-                        <i>«Иван, добрый день! Я сейчас масштабирую свой проект и столкнулся с вопросом [вопрос]. Ваш опыт мне очень полезен.<br>
-                        Понимаю ценность вашего времени, поэтому предлагаю сделать рекламную интеграцию вашего продукта в моем инстаграмме (10к лояльной аудитории, охваты в сторис [цифра]). Уверен, вашему бизнесу будет полезен этот приток лидов.<br>
-                        Найдется полчаса для короткого созвона/общения)»</i>
+                        <b>Шаблон сообщения:</b><br><i>«Иван, добрый день! Я сейчас масштабирую свой проект и столкнулся с вопросом [вопрос]. Ваш опыт мне очень полезен.<br>Понимаю ценность вашего времени, поэтому предлагаю сделать рекламную интеграцию вашего продукта в моем инстаграмме (10к лояльной аудитории, охваты в сторис [цифра]). Уверен, вашему бизнесу будет полезен этот приток лидов.<br>Найдется полчаса для короткого созвона/общения)»</i>
                     </div>
                 </details>
             </div>
