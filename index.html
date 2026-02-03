@@ -45,7 +45,7 @@
             background: var(--card-bg);
             border-radius: 14px; overflow: hidden;
             margin-bottom: 24px; position: relative;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5); /* Глубокая тень */
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
         .card-body { padding: 16px; }
         .card-title { font-size: 19px; font-weight: 700; margin-bottom: 8px; line-height: 1.2; }
@@ -67,15 +67,15 @@
             overflow: hidden;
         }
         
-        /* Авто-обложка */
+        /* Обложка (теперь ищет локальный файл) */
         .video-cover-img {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             object-fit: cover;
-            opacity: 0.8; /* Чуть затемняем картинку */
+            opacity: 0.9;
             transition: opacity 0.3s;
         }
 
-        /* Кнопка Play (Кастомная) */
+        /* Кнопка Play */
         .play-button {
             position: absolute;
             top: 50%; left: 50%;
@@ -99,20 +99,34 @@
             margin-left: 4px;
         }
         .video-facade:active .play-button { transform: translate(-50%, -50%) scale(0.9); background: rgba(255,255,255,0.25); }
+        .video-facade iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; z-index: 10; }
 
-        /* Сам iframe */
-        .video-facade iframe {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            border: 0; z-index: 10;
-        }
-
-        /* --- АУДИО И ТЕКСТ --- */
+        /* --- АУДИО И ОФОРМЛЕНИЕ ТЕКСТА (НОВОЕ) --- */
         audio { width: 100%; height: 40px; margin-top: 5px; }
         details { background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; }
         summary { padding: 12px; cursor: pointer; font-weight: 600; color: var(--accent-color); list-style: none; display: flex; justify-content: space-between; align-items: center; }
         summary::after { content: '+'; font-size: 18px; }
         details[open] summary::after { content: '-'; }
-        .text-content { padding: 12px; font-size: 15px; line-height: 1.5; color: #d1d1d6; white-space: pre-line; border-top: 1px solid rgba(255,255,255,0.05); }
+        
+        .text-content {
+            padding: 16px;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #d1d1d6;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        /* Стиль для жирного текста */
+        .text-content b { color: #ffffff; font-weight: 700; }
+        /* Стиль для курсива (цитаты, мысли) */
+        .text-content i { color: var(--text-secondary); font-style: italic; }
+        /* Стиль для списков */
+        .text-content ul { padding-left: 20px; margin: 15px 0; }
+        .text-content li { margin-bottom: 10px; }
+        /* Стиль для выделения (маркер) */
+        .highlight {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
 
         /* --- МЕНЮ --- */
         .bottom-nav {
@@ -134,7 +148,7 @@
         
         <div class="card">
             <div class="video-facade" onclick="loadVideo(this, 'Ja2VgG4I9KA')">
-                <img src="https://img.youtube.com/vi/Ja2VgG4I9KA/maxresdefault.jpg" class="video-cover-img">
+                <img src="cover1.jpg" class="video-cover-img" alt="Обложка 1">
                 <div class="play-button"></div>
             </div>
             <div class="card-body">
@@ -146,7 +160,7 @@
 
         <div class="card">
             <div class="video-facade" onclick="loadVideo(this, 'NDYvxYSFbvA')">
-                <img src="https://img.youtube.com/vi/NDYvxYSFbvA/maxresdefault.jpg" class="video-cover-img">
+                <img src="cover2.jpg" class="video-cover-img" alt="Обложка 2">
                 <div class="play-button"></div>
             </div>
             <div class="card-body">
@@ -158,7 +172,7 @@
 
         <div class="card">
             <div class="video-facade" onclick="loadVideo(this, 'sq9P1fyzLnk')">
-                <img src="https://img.youtube.com/vi/sq9P1fyzLnk/maxresdefault.jpg" class="video-cover-img">
+                <img src="cover3.jpg" class="video-cover-img" alt="Обложка 3">
                 <div class="play-button"></div>
             </div>
             <div class="card-body">
@@ -169,7 +183,7 @@
         
         <div class="card">
             <div class="video-facade" onclick="loadVideo(this, 'ayd3ULvow3k')">
-                <img src="https://img.youtube.com/vi/ayd3ULvow3k/maxresdefault.jpg" class="video-cover-img">
+                <img src="cover4.jpg" class="video-cover-img" alt="Обложка 4">
                 <div class="play-button"></div>
             </div>
             <div class="card-body">
@@ -182,7 +196,7 @@
     <div id="tab-mindset" class="tab-content">
         <div class="card">
             <div class="video-facade" onclick="loadVideo(this, 'n9s_4jvxR0M')">
-                <img src="https://img.youtube.com/vi/n9s_4jvxR0M/maxresdefault.jpg" class="video-cover-img">
+                <img src="cover5.jpg" class="video-cover-img" alt="Обложка 5">
                 <div class="play-button"></div>
             </div>
             <div class="card-body">
@@ -193,7 +207,7 @@
 
         <div class="card">
             <div class="video-facade" onclick="loadVideo(this, 'odtCZ2fsRRk')">
-                <img src="https://img.youtube.com/vi/odtCZ2fsRRk/maxresdefault.jpg" class="video-cover-img">
+                <img src="cover6.jpg" class="video-cover-img" alt="Обложка 6">
                 <div class="play-button"></div>
             </div>
             <div class="card-body">
@@ -231,49 +245,44 @@
                 <details>
                     <summary>Читать</summary>
                     <div class="text-content">
-                        Представь ситуацию:
-                        - Ты приехал на заправку, оплатил ее и 90% топлива ты сливаешь на асфальт , не в бак.
+                        Представь ситуацию:<br><br>
                         
-                        Чувствуешь? Не приятно, ты ведь заплатил - а  получилось что зря. 
+                        <ul>
+                            <li>Ты приехал на заправку, оплатил ее и 90% топлива ты сливаешь на асфальт, не в бак.</li>
+                        </ul>
                         
-                        Так вот ты машина. В начале дня ты полон энергии, но тратишь ее не на те вещи. 
-                        Ты скролишь ленту, др()чишь, выпиваешь и думаешь:
+                        <i>Чувствуешь? Не приятно, ты ведь заплатил - а получилось что зря.</i><br><br>
                         
-                        - Окей, 4 часа дня. Еще время есть. Сяду за работу к 5. Потом в 5 ты решил позвонить кентам, разговор затянулся и выходит что уже 7 часов
+                        <b>Так вот, ты — машина.</b> В начале дня ты полон энергии, но тратишь ее не на те вещи. Ты скролишь ленту, др()чишь, выпиваешь и думаешь:<br><br>
                         
-                        Как так? Я же не давно, вроде бы, встал с кровати. Ты заставляешь себя сесть работать, но фокуса уже нет. 
-                        Делаешь базовые задачи в работе, может даже не все. А может вообще создаешь видимость работы, для того чтобы “искусственно” заставить не винить себя.
+                        <i>«Окей, 4 часа дня. Еще время есть. Сяду за работу к 5».</i><br>
+                        Потом в 5 ты решил позвонить кентам, разговор затянулся и выходит что уже 7 часов.<br><br>
                         
-                        Какой вывод?
-                        - 20% забрал тик ток
-                        - 30% забрало по?но
-                        - 30% ты отдал на пустой разговор с друзьями
-                        - 10% забрали рутинные дела
-                        - 10% осталось
+                        Как так? Я же недавно, вроде бы, встал с кровати. Ты заставляешь себя сесть работать, но фокуса уже нет. Делаешь базовые задачи в работе, может даже не все. А может вообще создаешь видимость работы, для того чтобы “искусственно” заставить не винить себя.<br><br>
                         
-                        + не закрытый день
-                        + не сдвиг с места
-                        + план переноситься на завтра
-                        + много всякой негативной залупы, которую перечисляя быстрее загонишь себя в депрессию
+                        <span class="highlight">Какой вывод?</span>
+                        <ul>
+                            <li>20% забрал тик ток</li>
+                            <li>30% забрало по?но</li>
+                            <li>30% ты отдал на пустой разговор с друзьями</li>
+                            <li>10% забрали рутинные дела</li>
+                            <li><b>10% осталось</b></li>
+                        </ul>
                         
-                        Ты думаешь, что я описал стандартный базовый пример неудачника - который все приводят чтобы запугать вас. Но на самом деле все это не работает. 
+                        В итоге: не закрытый день, не сдвиг с места, план переносится на завтра.<br><br>
                         
-                        Никто не считает себя таким, но почему то в конце дня испытывает злость на себя и чувство слабости. 
+                        Ты думаешь, что я описал стандартный пример неудачника. Но никто не считает себя таким, а в конце дня испытывает злость на себя и чувство слабости.<br><br>
                         
-                        У каждого свои отвлечения, суть в том что они  есть. Соблазны у каждого - суть в том, чтобы их сконтролировать
+                        У каждого свои отвлечения, суть в том что они есть. Соблазны у каждого - суть в том, чтобы их сконтролировать.<br><br>
                         
-                        - Как?
-                        Не убирать их навсегда, а временно. Пока ты не сделаешь то то то то…
+                        <b>Как?</b><br>
+                        Не убирать их навсегда, а временно. Пока ты не сделаешь то-то и то-то...<br>
+                        Не покуришь сигарету, пока не закроешь сделку. Не посмотришь фильм, пока не закроешь дневной план.<br><br>
                         
-                        Не покуришь сигарету, пока не закроешь сделку
-                        Не посмотришь фильм, пока не закроешь дневной план
-                        и тд
+                        Или цель: Купить мотоцикл.<br>
+                        <i>”Я не буду скачивать тик ток, инсту (если не нужно для работы) пока не куплю мотоцикл”</i><br><br>
                         
-                        Или цель: Купить мотоцикл
-                        
-                        ”я не буду скачивать тик ток, инсту (если не нужно для работы) пока не куплю мотоцик”
-                        
-                        Сделайте зависимость стимулом.
+                        <span class="highlight">Сделайте зависимость стимулом.</span>
                     </div>
                 </details>
             </div>
@@ -285,29 +294,24 @@
                 <details>
                     <summary>Читать</summary>
                     <div class="text-content">
-                        Тут тонкая грань между постоянным общением, где я рассказывал что не нужно навязываться и искать целенаправленно.
+                        Тут тонкая грань между постоянным общением и навязчивостью.<br><br>
 
-                        Тут мы говорим про построение связей с уже успешными людьми в вашей нише для получение опыта и информации. 
-                        Взаимовыгода.
+                        Мы говорим про построение связей с уже успешными людьми в вашей нише для получение опыта и информации. <b>Взаимовыгода.</b><br><br>
                         
-                        Вы должны предложить человеку что то ценное, чтобы он тоже получил хоть и минимальный но импакт. Ведь если хотите созвониться/встретиться/списаться с человеком выше вас по рангу, вам нужно его заинтересовать.
+                        Вы должны предложить человеку что-то ценное, чтобы он тоже получил хоть и минимальный, но импакт. Ведь если хотите созвониться/встретиться с человеком выше вас по рангу, вам нужно его заинтересовать.<br><br>
                         
-                        - Как это сделать?
+                        <span class="highlight">Как это сделать?</span><br>
+                        Важно не спрашивать "чем я могу быть полезен", а сразу предложить готовое решение.<br><br>
                         
-                        Важно не спрашивать "чем я могу быть полезен" ,а сразу предложить готовое решение:
-                        Пример:
+                        <b>Пример:</b><br>
+                        Если у вас есть подписчики в инсте/тг можете предложить рекламу сервиса, бизнеса взамен разговора. Вот и прелесть медийки, самый простой способ.<br><br>
                         
-                        Если у вас есть подписчики в инсте/тг можете предложить рекламу сервиса, бизнеса в замен разговора.
-                        Вот и прелесть медийки, самый простой способ.
+                        В других случаях нужно отталкиваться от вашего навыка и предлагать, возможно, вариант улучшения бизнеса человека или доработать что-то. Суть в том, чтобы не давать ощущение "бесплатной работы".<br><br>
                         
-                        В других случаях нужно отталкиваться от вашего навыка и предлагать возможно вариант улучшения бизнеса человека, с которым хотите пообщаться или доработать что то.
-                        
-                        Суть в том, чтобы не давать ощущение "бесплатной работы" человеку.
-                        
-                        Шаблон сообщения:
-                        «Иван, добрый день! Я сейчас масштабирую свой проект и столкнулся с вопросом [вопрос]. Ваш опыт мне очень полезен.
-                        Понимаю ценность вашего времени, поэтому предлагаю сделать рекламную интеграцию вашего продукта в моем инстаграмме (10к лояльной аудитории, охваты в сторис [цифра]). Уверен, вашему бизнесу будет полезен этот приток лидов.
-                        Найдется пол часа  для короткого созвона/общения)»
+                        <b>Шаблон сообщения:</b><br>
+                        <i>«Иван, добрый день! Я сейчас масштабирую свой проект и столкнулся с вопросом [вопрос]. Ваш опыт мне очень полезен.<br>
+                        Понимаю ценность вашего времени, поэтому предлагаю сделать рекламную интеграцию вашего продукта в моем инстаграмме (10к лояльной аудитории, охваты в сторис [цифра]). Уверен, вашему бизнесу будет полезен этот приток лидов.<br>
+                        Найдется полчаса для короткого созвона/общения)»</i>
                     </div>
                 </details>
             </div>
@@ -336,13 +340,10 @@
         window.Telegram.WebApp.setBackgroundColor('#000000');
 
         function loadVideo(element, videoId) {
-            // Создаем iframe с автозапуском
             var iframe = document.createElement('iframe');
             iframe.src = 'https://www.youtube.com/embed/' + videoId + '?autoplay=1&modestbranding=1&rel=0&showinfo=0&controls=1';
             iframe.setAttribute('allowfullscreen', '');
             iframe.setAttribute('allow', 'autoplay; encrypted-media');
-            
-            // Очищаем блок и вставляем видео
             element.innerHTML = '';
             element.appendChild(iframe);
         }
