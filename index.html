@@ -15,6 +15,7 @@
             --text-secondary: #8e8e93;
             --accent-color: #0a84ff;
             --accent-gradient: linear-gradient(135deg, #0a84ff 0%, #007aff 100%);
+            --danger-gradient: linear-gradient(135deg, #ff453a 0%, #ff3b30 100%); /* Градиент "Опасность" */
             --separator: rgba(254, 254, 254, 0.12);
             --success: #30d158;
         }
@@ -39,18 +40,39 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         /* --- ГЛАВНАЯ --- */
-        .hero-section { padding: 20px 0; text-align: center; }
+        .hero-section { padding: 10px 0 20px; text-align: center; }
         .user-avatar-large {
             width: 80px; height: 80px; border-radius: 50%; background: #333; margin: 0 auto 15px;
             object-fit: cover; border: 2px solid var(--accent-color); box-shadow: 0 0 20px rgba(10, 132, 255, 0.3);
         }
-        .greeting { font-size: 28px; font-weight: 800; margin-bottom: 5px; }
-        .sub-greeting { color: var(--text-secondary); font-size: 15px; }
+        .greeting { font-size: 26px; font-weight: 800; margin-bottom: 5px; }
+        .sub-greeting { color: var(--text-secondary); font-size: 14px; }
 
-        /* Прогресс бар (Живой) */
+        /* --- НОВЫЙ БЛОК: MEMENTO MORI (КАЛЕНДАРЬ) --- */
+        .time-card {
+            background: rgba(28, 28, 30, 0.5); border-radius: 16px; padding: 20px;
+            margin: 20px 0; border: 1px solid rgba(255, 69, 58, 0.2); /* Красная обводка */
+            position: relative; overflow: hidden;
+        }
+        .time-header {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;
+        }
+        .time-title { font-size: 15px; font-weight: 700; color: #ff453a; text-transform: uppercase; letter-spacing: 0.5px; }
+        .time-icon { font-size: 18px; animation: pulse 2s infinite; }
+        
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+        .time-row { margin-bottom: 12px; }
+        .time-label { display: flex; justify-content: space-between; font-size: 13px; color: #d1d1d6; margin-bottom: 6px; }
+        .time-track { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
+        .time-fill { height: 100%; border-radius: 3px; background: var(--danger-gradient); transition: width 1s linear; }
+        
+        .time-hint { font-size: 11px; color: #8e8e93; margin-top: 10px; font-style: italic; }
+
+        /* Прогресс бар (Уровень) */
         .progress-card {
             background: var(--card-bg); border-radius: 16px; padding: 20px;
-            margin: 25px 0; border: 0.5px solid rgba(255,255,255,0.1);
+            margin: 20px 0; border: 0.5px solid rgba(255,255,255,0.1);
         }
         .progress-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; font-weight: 600; }
         .progress-track { width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
@@ -63,8 +85,8 @@
             border: 0.5px solid rgba(255,255,255,0.08); margin-bottom: 25px;
         }
         .quote-icon { font-size: 40px; color: rgba(255,255,255,0.1); position: absolute; top: 10px; left: 15px; }
-        .quote-text { font-size: 17px; font-style: italic; line-height: 1.5; position: relative; z-index: 2; margin-bottom: 15px; }
-        .quote-label { font-size: 12px; color: var(--accent-color); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+        .quote-text { font-size: 16px; font-style: italic; line-height: 1.5; position: relative; z-index: 2; margin-bottom: 15px; }
+        .quote-label { font-size: 11px; color: var(--accent-color); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
 
         .main-btn {
             display: block; width: 100%; padding: 16px; background: var(--accent-gradient); color: #fff;
@@ -123,7 +145,7 @@
         .menu-item:last-child { border-bottom: none; }
         .menu-item:active { background: rgba(255,255,255,0.05); }
 
-        /* Модальное окно (О проекте) */
+        /* Модальное окно */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; padding: 20px;
@@ -163,9 +185,37 @@
         <div class="hero-section">
             <img src="" id="home-avatar" class="user-avatar-large" onerror="this.src='https://cdn-icons-png.flaticon.com/512/847/847969.png'">
             <div class="greeting">Привет, <span id="username">Чемпион</span>!</div>
-            <div class="sub-greeting">Твой путь к цели продолжается.</div>
+            <div class="sub-greeting">Начни забирать своё сегодня.</div>
         </div>
 
+        <div class="time-card">
+            <div class="time-header">
+                <span class="time-title">⚠️ Времени нет</span>
+                <span class="time-icon">⏳</span>
+            </div>
+            
+            <div class="time-row">
+                <div class="time-label">
+                    <span>Текущий год сожжен:</span>
+                    <span id="year-percent" style="color:#ff453a; font-weight:700;">0%</span>
+                </div>
+                <div class="time-track">
+                    <div class="time-fill" id="year-bar" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="time-row" style="margin-bottom:0;">
+                <div class="time-label">
+                    <span>День сегодня ушел:</span>
+                    <span id="day-percent" style="color:#ff453a; font-weight:700;">0%</span>
+                </div>
+                <div class="time-track">
+                    <div class="time-fill" id="day-bar" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <div class="time-hint">Эти часы не вернуть. Работай быстрее.</div>
+        </div>
         <div class="progress-card">
             <div class="progress-header">
                 <span id="level-title">Уровень: Новичок</span>
@@ -188,9 +238,7 @@
     </div>
 
     <div id="tab-library" class="tab-content">
-        
         <div class="section-header">Система</div>
-
         <div class="card" id="item-video1">
             <div class="video-facade" onclick="playContent('video1', this, 'Ja2VgG4I9KA')">
                 <img src="cover1.jpg" class="video-cover-img">
@@ -202,7 +250,6 @@
                 <div class="card-desc">Хватит планировать. Простая схема запуска.</div>
             </div>
         </div>
-
         <div class="card" id="item-video2">
             <div class="video-facade" onclick="playContent('video2', this, 'NDYvxYSFbvA')">
                 <img src="cover2.jpg" class="video-cover-img">
@@ -213,7 +260,6 @@
                 <div class="card-title">Дисциплина по-новому</div>
             </div>
         </div>
-
         <div class="card" id="item-video3">
             <div class="video-facade" onclick="playContent('video3', this, 'sq9P1fyzLnk')">
                 <img src="cover3.jpg" class="video-cover-img">
@@ -224,7 +270,6 @@
                 <div class="card-title">Мгновенный результат</div>
             </div>
         </div>
-        
         <div class="card" id="item-video4">
             <div class="video-facade" onclick="playContent('video4', this, 'ayd3ULvow3k')">
                 <img src="cover4.jpg" class="video-cover-img">
@@ -237,7 +282,6 @@
         </div>
 
         <div class="section-header">Мышление</div>
-
         <div class="card" id="item-video5">
             <div class="video-facade" onclick="playContent('video5', this, 'n9s_4jvxR0M')">
                 <img src="cover5.jpg" class="video-cover-img">
@@ -248,7 +292,6 @@
                 <div class="card-title">Тишина и концентрация</div>
             </div>
         </div>
-
         <div class="card" id="item-video6">
             <div class="video-facade" onclick="playContent('video6', this, 'odtCZ2fsRRk')">
                 <img src="cover6.jpg" class="video-cover-img">
@@ -277,7 +320,6 @@
         </div>
 
         <div class="section-header">Гайды</div>
-
         <div class="card" id="item-text1">
             <div class="card-body">
                 <span class="badge">Стратегия</span>
@@ -378,21 +420,16 @@
                 <span>💬 Поддержка / Вопрос</span>
                 <span class="arrow">➔</span>
             </a>
-            
             <div class="menu-item" onclick="openModal()">
                 <span>ℹ️ О сути (Манифест)</span>
                 <span class="arrow">Читать</span>
             </div>
-            
             <div class="menu-item" onclick="resetProgress()">
                 <span style="color: #ff453a">🔄 Начать заново</span>
                 <span class="arrow">Сброс</span>
             </div>
         </div>
-        
-        <div style="text-align: center; margin-top: 30px; color: #444; font-size: 12px;">
-            Версия приложения 1.2.0 (Stable)
-        </div>
+        <div style="text-align: center; margin-top: 30px; color: #444; font-size: 12px;">Версия 1.3.0 (Memento Mori)</div>
     </div>
 
     <div class="modal" id="about-modal">
@@ -431,10 +468,8 @@
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
-        tg.setHeaderColor('#000000');
-        tg.setBackgroundColor('#000000');
+        tg.ready(); tg.expand();
+        tg.setHeaderColor('#000000'); tg.setBackgroundColor('#000000');
 
         // --- ЦИТАТЫ ---
         const quotes = [
@@ -447,8 +482,30 @@
             "Работай молча. Пусть твой успех пошумит за тебя.",
             "Не сравнивай своё начало с чьей-то серединой."
         ];
-        const dateHash = new Date().getDate(); 
-        document.getElementById('daily-quote').innerText = quotes[dateHash % quotes.length];
+        document.getElementById('daily-quote').innerText = quotes[new Date().getDate() % quotes.length];
+
+        // --- MEMENTO MORI (ТАЙМЕР СМЕРТИ ВРЕМЕНИ) ---
+        function updateTimeDeath() {
+            const now = new Date();
+            
+            // Сжигание года
+            const startOfYear = new Date(now.getFullYear(), 0, 1);
+            const endOfYear = new Date(now.getFullYear() + 1, 0, 1);
+            const yearPercent = ((now - startOfYear) / (endOfYear - startOfYear)) * 100;
+            
+            // Сжигание дня
+            const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+            const dayPercent = ((now - startOfDay) / (endOfDay - startOfDay)) * 100;
+
+            document.getElementById('year-bar').style.width = yearPercent + '%';
+            document.getElementById('year-percent').innerText = yearPercent.toFixed(1) + '%';
+            
+            document.getElementById('day-bar').style.width = dayPercent + '%';
+            document.getElementById('day-percent').innerText = dayPercent.toFixed(1) + '%';
+        }
+        setInterval(updateTimeDeath, 1000); // Обновляем каждую секунду
+        updateTimeDeath(); // Первый запуск
 
         // --- ДАННЫЕ ЮЗЕРА ---
         const user = tg.initDataUnsafe.user;
@@ -462,8 +519,8 @@
             }
         }
 
-        // --- СИСТЕМА ПРОГРЕССА (LocalStorage) ---
-        const totalItems = 10; // 6 видео + 2 аудио + 2 текста
+        // --- ПРОГРЕСС ---
+        const totalItems = 10;
         let completedItems = JSON.parse(localStorage.getItem('completedItems')) || [];
 
         function updateProgressUI() {
@@ -471,14 +528,12 @@
             document.getElementById('progress-percent').innerText = percent + '%';
             document.getElementById('progress-bar').style.width = percent + '%';
             
-            // Меняем статус
             let status = "Новичок";
             if(percent > 30) status = "Продвинутый";
             if(percent > 70) status = "Машина";
             if(percent === 100) status = "Легенда";
             document.getElementById('level-title').innerText = "Уровень: " + status;
 
-            // Подсвечиваем пройденные карточки
             completedItems.forEach(id => {
                 const el = document.getElementById('item-' + id);
                 if(el) el.classList.add('done');
@@ -490,27 +545,24 @@
                 completedItems.push(id);
                 localStorage.setItem('completedItems', JSON.stringify(completedItems));
                 updateProgressUI();
-                tg.HapticFeedback.notificationOccurred('success'); // Вибрация при успехе
+                tg.HapticFeedback.notificationOccurred('success');
             }
         }
 
         function resetProgress() {
-            if(confirm('Сбросить весь прогресс обучения?')) {
+            if(confirm('Сбросить весь прогресс?')) {
                 completedItems = [];
                 localStorage.removeItem('completedItems');
-                // Убираем классы done
                 document.querySelectorAll('.card').forEach(el => el.classList.remove('done'));
                 updateProgressUI();
                 tg.HapticFeedback.impactOccurred('medium');
             }
         }
-
-        // Инициализация при старте
         updateProgressUI();
 
-        // --- ФУНКЦИИ ---
+        // --- НАВИГАЦИЯ ---
         function playContent(id, element, videoId) {
-            trackProgress(id); // Засчитываем прогресс при клике
+            trackProgress(id);
             var iframe = document.createElement('iframe');
             iframe.src = 'https://www.youtube.com/embed/' + videoId + '?autoplay=1&modestbranding=1&rel=0&showinfo=0&controls=1';
             iframe.setAttribute('allowfullscreen', '');
@@ -535,7 +587,6 @@
             window.scrollTo({top: 0, behavior: 'smooth'});
         }
 
-        // Модалка
         function openModal() { document.getElementById('about-modal').classList.add('open'); }
         function closeModal() { document.getElementById('about-modal').classList.remove('open'); }
     </script>
