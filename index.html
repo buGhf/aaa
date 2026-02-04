@@ -3,123 +3,222 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>My Course</title>
+    <title>My Super App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* --- БАЗОВЫЕ НАСТРОЙКИ --- */
+        /* --- БАЗА И ЦВЕТА --- */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         :root {
             --bg-color: #000000;
-            --card-bg: #1c1c1e; /* Базовый цвет, но мы его улучшим градиентом */
+            --card-bg: #1c1c1e;
             --text-primary: #ffffff;
             --text-secondary: #8e8e93;
-            --accent-color: #0a84ff;
+            --accent-color: #0a84ff; /* iOS Blue */
+            --accent-gradient: linear-gradient(135deg, #0a84ff 0%, #007aff 100%);
             --separator: rgba(254, 254, 254, 0.12);
+            --danger: #ff453a;
         }
         body {
             background-color: var(--bg-color);
             color: var(--text-primary);
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Roboto', sans-serif;
             margin: 0; padding: 0;
-            padding-bottom: 90px; padding-top: 60px;
+            padding-bottom: 95px; /* Место под меню */
+            padding-top: 50px;    /* Место под шапку */
         }
 
         /* --- ШАПКА --- */
+        /* На главной шапку скрываем, там свой заголовок. На остальных - показываем */
         .header {
-            position: fixed; top: 0; left: 0; width: 100%; height: 60px;
+            position: fixed; top: 0; left: 0; width: 100%; height: 50px;
             background: rgba(28, 28, 30, 0.85);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-bottom: 0.5px solid var(--separator);
             display: flex; align-items: center; justify-content: center;
-            z-index: 1000;
+            z-index: 900;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
         }
+        .header.visible { opacity: 1; pointer-events: auto; }
         .header h1 { font-size: 17px; font-weight: 600; margin: 0; }
 
         /* --- ВКЛАДКИ --- */
-        .tab-content { display: none; padding: 20px 16px; animation: fadeIn 0.4s ease; }
+        .tab-content { display: none; padding: 20px 16px; animation: fadeIn 0.3s ease; }
         .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- КАРТОЧКИ (НОВЫЙ СТИЛЬ iOS REFLECTION) --- */
+        /* --- ГЛАВНАЯ (HOME) --- */
+        .hero-section {
+            padding: 20px 0;
+            text-align: center;
+        }
+        .user-avatar-large {
+            width: 80px; height: 80px; border-radius: 50%;
+            background: #333; margin: 0 auto 15px;
+            object-fit: cover;
+            border: 2px solid var(--accent-color);
+            box-shadow: 0 0 20px rgba(10, 132, 255, 0.3);
+        }
+        .greeting { font-size: 28px; font-weight: 800; margin-bottom: 5px; }
+        .sub-greeting { color: var(--text-secondary); font-size: 15px; }
+
+        /* Прогресс бар */
+        .progress-card {
+            background: var(--card-bg); border-radius: 16px; padding: 20px;
+            margin: 25px 0; border: 0.5px solid rgba(255,255,255,0.1);
+        }
+        .progress-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; font-weight: 600; }
+        .progress-track { width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+        .progress-fill { width: 15%; height: 100%; background: var(--accent-gradient); border-radius: 4px; }
+        
+        /* Цитата дня */
+        .quote-card {
+            background: linear-gradient(135deg, #1c1c1e 0%, #2c2c2e 100%);
+            border-radius: 16px; padding: 24px;
+            position: relative; overflow: hidden;
+            border: 0.5px solid rgba(255,255,255,0.08);
+            margin-bottom: 25px;
+        }
+        .quote-icon { font-size: 40px; color: rgba(255,255,255,0.1); position: absolute; top: 10px; left: 15px; }
+        .quote-text { font-size: 17px; font-style: italic; line-height: 1.5; position: relative; z-index: 2; margin-bottom: 15px; }
+        .quote-label { font-size: 12px; color: var(--accent-color); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+
+        /* Кнопка действия */
+        .main-btn {
+            display: block; width: 100%; padding: 16px;
+            background: var(--accent-gradient); color: #fff;
+            text-align: center; border-radius: 14px;
+            font-size: 17px; font-weight: 600; text-decoration: none;
+            box-shadow: 0 4px 15px rgba(10, 132, 255, 0.4);
+            transition: transform 0.1s;
+        }
+        .main-btn:active { transform: scale(0.98); }
+
+        /* --- БАЗА (LIBRARY) --- */
+        .section-header {
+            font-size: 22px; font-weight: 800; margin: 30px 0 15px;
+            color: #fff; padding-left: 5px; border-left: 3px solid var(--accent-color); line-height: 1;
+        }
+        
+        /* Карточки контента */
         .card {
-            /* Легкий градиент фона для объема */
-            background: linear-gradient(180deg, rgba(35,35,37,1) 0%, rgba(28,28,30,1) 100%);
-            border-radius: 14px;
-            overflow: hidden;
-            margin-bottom: 24px;
-            position: relative;
-            
-            /* --- МАГИЯ БЛИКОВ И ОБВОДКИ --- */
-            /* 1. Тончайшая физическая рамка 0.5px */
+            background: var(--card-bg);
+            border-radius: 14px; overflow: hidden; margin-bottom: 20px; position: relative;
             border: 0.5px solid rgba(255, 255, 255, 0.08);
-            
-            /* 2. Сложные тени для эффекта стекла */
-            box-shadow: 
-                /* Внутренний яркий блик сверху (отражение света) */
-                inset 0 1px 0 0 rgba(255, 255, 255, 0.15),
-                /* Внутреннее мягкое свечение по бокам */
-                inset 0 0 0 1px rgba(255, 255, 255, 0.03),
-                /* Глубокая внешняя тень для отрыва от фона */
-                0 8px 24px rgba(0, 0, 0, 0.4);
+            box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.1), 0 10px 30px rgba(0, 0, 0, 0.5);
         }
         .card-body { padding: 16px; }
-        .card-title { font-size: 19px; font-weight: 700; margin-bottom: 8px; line-height: 1.2; }
-        .card-desc { font-size: 15px; color: var(--text-secondary); margin-bottom: 15px; line-height: 1.4; }
+        .card-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; line-height: 1.3; }
+        .card-desc { font-size: 14px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.4; }
         .badge {
             display: inline-block; padding: 4px 8px;
             background: rgba(10, 132, 255, 0.15); color: var(--accent-color);
-            border-radius: 6px; font-size: 11px; font-weight: 600;
+            border-radius: 6px; font-size: 11px; font-weight: 700;
             text-transform: uppercase; margin-bottom: 8px;
         }
 
-        /* --- УМНЫЙ ПЛЕЕР (МАСКА) --- */
-        .video-facade { position: relative; padding-bottom: 56.25%; height: 0; background-color: #000; cursor: pointer; overflow: hidden; }
-        .video-cover-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.9; transition: opacity 0.3s; }
+        /* Видео */
+        .video-facade { position: relative; padding-bottom: 56.25%; height: 0; background-color: #000; cursor: pointer; }
+        .video-cover-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
         .play-button {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 60px; height: 60px; background: rgba(255, 255, 255, 0.15);
+            width: 56px; height: 56px; background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-            transition: transform 0.2s, background 0.2s; z-index: 2;
+            border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 8px 25px rgba(0,0,0,0.4);
         }
-        .play-button::after { content: ''; display: block; width: 0; height: 0; border-left: 18px solid #fff; border-top: 10px solid transparent; border-bottom: 10px solid transparent; margin-left: 4px; }
-        .video-facade:active .play-button { transform: translate(-50%, -50%) scale(0.9); background: rgba(255,255,255,0.25); }
+        .play-button::after { content: ''; width: 0; height: 0; border-left: 16px solid #fff; border-top: 9px solid transparent; border-bottom: 9px solid transparent; margin-left: 4px; }
         .video-facade iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; z-index: 10; }
 
-        /* --- АУДИО И ТЕКСТ --- */
+        /* Аудио и текст */
         audio { width: 100%; height: 40px; margin-top: 5px; }
-        details { background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; }
-        summary { padding: 12px; cursor: pointer; font-weight: 600; color: var(--accent-color); list-style: none; display: flex; justify-content: space-between; align-items: center; }
-        summary::after { content: '+'; font-size: 18px; }
+        details { background: rgba(255,255,255,0.05); border-radius: 10px; }
+        summary { padding: 12px; cursor: pointer; font-weight: 600; color: var(--accent-color); list-style: none; display: flex; justify-content: space-between; }
+        summary::after { content: '+'; }
         details[open] summary::after { content: '-'; }
-        .text-content { padding: 16px; font-size: 16px; line-height: 1.6; color: #d1d1d6; border-top: 1px solid rgba(255,255,255,0.05); }
-        .text-content b { color: #ffffff; font-weight: 700; }
-        .text-content i { color: var(--text-secondary); font-style: italic; }
-        .text-content ul { padding-left: 20px; margin: 15px 0; }
-        .text-content li { margin-bottom: 10px; }
+        .text-content { padding: 16px; font-size: 15px; line-height: 1.6; color: #d1d1d6; border-top: 1px solid rgba(255,255,255,0.05); }
+        .text-content b { color: #fff; font-weight: 700; }
+        .text-content ul { padding-left: 20px; margin: 10px 0; }
         .highlight { color: var(--accent-color); font-weight: 600; }
 
-        /* --- МЕНЮ --- */
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 83px;
-            background: rgba(28, 28, 30, 0.90); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-top: 0.5px solid var(--separator); display: flex; justify-content: space-around; padding-top: 10px; z-index: 1000;
+        /* --- ПРОФИЛЬ (PROFILE) --- */
+        .profile-header { display: flex; align-items: center; margin-bottom: 30px; }
+        .profile-avatar { width: 70px; height: 70px; border-radius: 50%; background: #333; margin-right: 15px; object-fit: cover; }
+        .profile-info h2 { margin: 0; font-size: 20px; }
+        .profile-info p { margin: 5px 0 0 0; color: var(--text-secondary); font-size: 14px; }
+        
+        .menu-list { background: var(--card-bg); border-radius: 14px; overflow: hidden; }
+        .menu-item {
+            padding: 16px; display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; font-size: 16px;
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #8e8e93; font-size: 10px; font-weight: 500; width: 60px; cursor: pointer; transition: color 0.2s; }
-        .nav-item svg { width: 28px; height: 28px; margin-bottom: 4px; fill: currentColor; }
+        .menu-item:last-child { border-bottom: none; }
+        .menu-item:active { background: rgba(255,255,255,0.05); }
+        .arrow { color: var(--text-secondary); font-size: 14px; }
+
+        /* --- НИЖНЕЕ МЕНЮ (4 TAB BAR) --- */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 85px;
+            background: rgba(28, 28, 30, 0.92); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border-top: 0.5px solid var(--separator);
+            display: flex; justify-content: space-between; padding: 10px 20px; z-index: 1000;
+        }
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+            color: #8e8e93; font-size: 10px; font-weight: 500; width: 60px;
+            cursor: pointer; transition: color 0.2s;
+        }
+        .nav-item svg { width: 26px; height: 26px; margin-bottom: 5px; fill: currentColor; }
         .nav-item.active { color: var(--accent-color); }
+
+        /* --- AI Placeholder --- */
+        .ai-placeholder { text-align: center; padding: 60px 20px; }
+        .ai-icon { font-size: 70px; margin-bottom: 20px; }
+
     </style>
 </head>
 <body>
 
-    <div class="header"><h1 id="page-title">Система</h1></div>
+    <div class="header" id="main-header">
+        <h1 id="header-title">База знаний</h1>
+    </div>
 
-    <div id="tab-system" class="tab-content active">
+    <div id="tab-home" class="tab-content active">
+        <div class="hero-section">
+            <img src="" id="home-avatar" class="user-avatar-large" onerror="this.src='https://cdn-icons-png.flaticon.com/512/847/847969.png'">
+            <div class="greeting">Привет, <span id="username">Чемпион</span>!</div>
+            <div class="sub-greeting">Твой путь к цели продолжается.</div>
+        </div>
+
+        <div class="progress-card">
+            <div class="progress-header">
+                <span>Уровень: Новичок</span>
+                <span style="color: var(--accent-color)">15%</span>
+            </div>
+            <div class="progress-track">
+                <div class="progress-fill"></div>
+            </div>
+        </div>
+
+        <div class="quote-card">
+            <div class="quote-icon">“</div>
+            <div class="quote-text" id="daily-quote">
+                Дисциплина — это решение делать то, чего очень не хочется делать, чтобы достичь того, чего очень хочется достичь.
+            </div>
+            <div class="quote-label">Мысль дня</div>
+        </div>
+
+        <a href="#" onclick="switchTab('tab-library', 'База знаний', document.getElementById('nav-library'))" class="main-btn">
+            Продолжить обучение ➔
+        </a>
+    </div>
+
+    <div id="tab-library" class="tab-content">
         
+        <div class="section-header">Система</div>
+
         <div class="card">
             <div class="video-facade" onclick="loadVideo(this, 'Ja2VgG4I9KA')">
-                <img src="cover1.jpg" class="video-cover-img" alt="Обложка 1">
+                <img src="cover1.jpg" class="video-cover-img">
                 <div class="play-button"></div>
             </div>
             <div class="card-body">
@@ -131,19 +230,18 @@
 
         <div class="card">
             <div class="video-facade" onclick="loadVideo(this, 'NDYvxYSFbvA')">
-                <img src="cover2.jpg" class="video-cover-img" alt="Обложка 2">
+                <img src="cover2.jpg" class="video-cover-img">
                 <div class="play-button"></div>
             </div>
             <div class="card-body">
                 <span class="badge">База</span>
                 <div class="card-title">Дисциплина по-новому</div>
-                <div class="card-desc">Почему старые методы не работают.</div>
             </div>
         </div>
 
         <div class="card">
             <div class="video-facade" onclick="loadVideo(this, 'sq9P1fyzLnk')">
-                <img src="cover3.jpg" class="video-cover-img" alt="Обложка 3">
+                <img src="cover3.jpg" class="video-cover-img">
                 <div class="play-button"></div>
             </div>
             <div class="card-body">
@@ -154,7 +252,7 @@
         
         <div class="card">
             <div class="video-facade" onclick="loadVideo(this, 'ayd3ULvow3k')">
-                <img src="cover4.jpg" class="video-cover-img" alt="Обложка 4">
+                <img src="cover4.jpg" class="video-cover-img">
                 <div class="play-button"></div>
             </div>
             <div class="card-body">
@@ -162,12 +260,12 @@
                 <div class="card-title">Работа без результата</div>
             </div>
         </div>
-    </div>
 
-    <div id="tab-mindset" class="tab-content">
+        <div class="section-header">Мышление</div>
+
         <div class="card">
             <div class="video-facade" onclick="loadVideo(this, 'n9s_4jvxR0M')">
-                <img src="cover5.jpg" class="video-cover-img" alt="Обложка 5">
+                <img src="cover5.jpg" class="video-cover-img">
                 <div class="play-button"></div>
             </div>
             <div class="card-body">
@@ -178,7 +276,7 @@
 
         <div class="card">
             <div class="video-facade" onclick="loadVideo(this, 'odtCZ2fsRRk')">
-                <img src="cover6.jpg" class="video-cover-img" alt="Обложка 6">
+                <img src="cover6.jpg" class="video-cover-img">
                 <div class="play-button"></div>
             </div>
             <div class="card-body">
@@ -191,24 +289,20 @@
             <div class="card-body">
                 <span class="badge">Аудио</span>
                 <div class="card-title">🎙 Окружение</div>
-                <audio controls>
-                    <source src="https://dl.dropboxusercontent.com/scl/fi/m3z94htt3v3ttu3z7agsr/voice1.mp3?rlkey=her5gtxpmpjfprzdyndhaxnk3" type="audio/mpeg">
-                </audio>
+                <audio controls><source src="https://dl.dropboxusercontent.com/scl/fi/m3z94htt3v3ttu3z7agsr/voice1.mp3?rlkey=her5gtxpmpjfprzdyndhaxnk3" type="audio/mpeg"></audio>
             </div>
         </div>
-        
+
         <div class="card">
             <div class="card-body">
                 <span class="badge">Аудио</span>
                 <div class="card-title">🎙 Отдых</div>
-                <audio controls>
-                    <source src="https://dl.dropboxusercontent.com/scl/fi/1rgpu09you9nmkq1eke9s/voice2.mp3?rlkey=p8z9xs4wq3ba7jsk6fqszg4o6" type="audio/mpeg">
-                </audio>
+                <audio controls><source src="https://dl.dropboxusercontent.com/scl/fi/1rgpu09you9nmkq1eke9s/voice2.mp3?rlkey=p8z9xs4wq3ba7jsk6fqszg4o6" type="audio/mpeg"></audio>
             </div>
         </div>
-    </div>
 
-    <div id="tab-guides" class="tab-content">
+        <div class="section-header">Гайды</div>
+
         <div class="card">
             <div class="card-body">
                 <span class="badge">Стратегия</span>
@@ -217,70 +311,162 @@
                     <summary>Читать</summary>
                     <div class="text-content">
                         Представь ситуацию:<br><br>
-                        <ul><li>Ты приехал на заправку, оплатил ее и 90% топлива ты сливаешь на асфальт, не в бак.</li></ul>
-                        <i>Чувствуешь? Не приятно, ты ведь заплатил - а получилось что зря.</i><br><br>
-                        <b>Так вот, ты — машина.</b> В начале дня ты полон энергии, но тратишь ее не на те вещи. Ты скролишь ленту, др()чишь, выпиваешь и думаешь:<br><br>
-                        <i>«Окей, 4 часа дня. Еще время есть. Сяду за работу к 5».</i><br>Потом в 5 ты решил позвонить кентам, разговор затянулся и выходит что уже 7 часов.<br><br>
-                        Как так? Я же недавно, вроде бы, встал с кровати. Ты заставляешь себя сесть работать, но фокуса уже нет. Делаешь базовые задачи в работе, может даже не все. А может вообще создаешь видимость работы, для того чтобы “искусственно” заставить не винить себя.<br><br>
-                        <span class="highlight">Какой вывод?</span>
+                        <ul><li>Ты приехал на заправку, оплатил ее и 90% топлива ты сливаешь на асфальт.</li></ul>
+                        <i>Чувствуешь? Неприятно.</i><br><br>
+                        <b>Так вот, ты — машина.</b> В начале дня ты полон энергии, но тратишь ее не туда. Скроллишь ленту, болтаешь ни о чем.<br><br>
+                        <span class="highlight">Вывод:</span>
                         <ul>
-                            <li>20% забрал тик ток</li>
-                            <li>30% забрало по?но</li>
-                            <li>30% ты отдал на пустой разговор с друзьями</li>
-                            <li>10% забрали рутинные дела</li>
-                            <li><b>10% осталось</b></li>
+                            <li>20% ТикТок</li>
+                            <li>30% Пустые разговоры</li>
+                            <li><b>10% Осталось на жизнь</b></li>
                         </ul>
-                        В итоге: не закрытый день, не сдвиг с места, план переносится на завтра.<br><br>
-                        Ты думаешь, что я описал стандартный пример неудачника. Но никто не считает себя таким, а в конце дня испытывает злость на себя и чувство слабости.<br><br>
-                        У каждого свои отвлечения, суть в том что они есть. Соблазны у каждого - суть в том, чтобы их сконтролировать.<br><br>
-                        <b>Как?</b><br>Не убирать их навсегда, а временно. Пока ты не сделаешь то-то и то-то...<br>Не покуришь сигарету, пока не закроешь сделку. Не посмотришь фильм, пока не закроешь дневной план.<br><br>
-                        Или цель: Купить мотоцикл.<br><i>”Я не буду скачивать тик ток, инсту (если не нужно для работы) пока не куплю мотоцикл”</i><br><br>
-                        <span class="highlight">Сделайте зависимость стимулом.</span>
+                        Не убирай соблазны навсегда, убери их временно. <i>«Я не зайду в инсту, пока не заработаю сегодня X рублей».</i><br>
+                        <b>Сделай зависимость стимулом.</b>
                     </div>
                 </details>
             </div>
         </div>
+
         <div class="card">
             <div class="card-body">
-                <span class="badge">Нетворкинг</span>
+                <span class="badge">Связи</span>
                 <div class="card-title">Как обзавестись связями</div>
                 <details>
                     <summary>Читать</summary>
                     <div class="text-content">
-                        Тут тонкая грань между постоянным общением и навязчивостью.<br><br>
-                        Мы говорим про построение связей с уже успешными людьми в вашей нише для получение опыта и информации. <b>Взаимовыгода.</b><br><br>
-                        Вы должны предложить человеку что-то ценное, чтобы он тоже получил хоть и минимальный, но импакт. Ведь если хотите созвониться/встретиться с человеком выше вас по рангу, вам нужно его заинтересовать.<br><br>
-                        <span class="highlight">Как это сделать?</span><br>Важно не спрашивать "чем я могу быть полезен", а сразу предложить готовое решение.<br><br>
-                        <b>Пример:</b><br>Если у вас есть подписчики в инсте/тг можете предложить рекламу сервиса, бизнеса взамен разговора. Вот и прелесть медийки, самый простой способ.<br><br>
-                        В других случаях нужно отталкиваться от вашего навыка и предлагать, возможно, вариант улучшения бизнеса человека или доработать что-то. Суть в том, чтобы не давать ощущение "бесплатной работы".<br><br>
-                        <b>Шаблон сообщения:</b><br><i>«Иван, добрый день! Я сейчас масштабирую свой проект и столкнулся с вопросом [вопрос]. Ваш опыт мне очень полезен.<br>Понимаю ценность вашего времени, поэтому предлагаю сделать рекламную интеграцию вашего продукта в моем инстаграмме (10к лояльной аудитории, охваты в сторис [цифра]). Уверен, вашему бизнесу будет полезен этот приток лидов.<br>Найдется полчаса для короткого созвона/общения)»</i>
+                        Главное правило: <b>Взаимовыгода.</b><br><br>
+                        Не спрашивай «чем помочь», предлагай готовое решение. Если у человека бизнес — предложи рекламу у себя. Если проект — предложи помощь руками.<br><br>
+                        <span class="highlight">Шаблон:</span><br>
+                        <i>«Иван, привет! Я сейчас масштабирую свой проект. Вижу, у тебя крутой опыт. Предлагаю бартер: я сделаю рекламу твоего продукта на свою аудиторию, а ты уделишь мне 15 минут на совет. Как смотришь?»</i>
                     </div>
                 </details>
             </div>
         </div>
     </div>
 
+    <div id="tab-ai" class="tab-content">
+        <div class="ai-placeholder">
+            <div class="ai-icon">🧠</div>
+            <h2 style="margin-top:0;">AI Ментор</h2>
+            <p style="color:#8e8e93; font-size:15px; line-height:1.5;">
+                Я подключаю нейросеть, которая станет твоим личным коучем.<br>
+                Она не будет тебя жалеть. Она будет давать результат.
+            </p>
+            <div style="margin-top: 30px; padding: 15px; border: 1px dashed #444; border-radius: 12px; color: #666; font-size: 13px;">
+                Статус: Настройка серверов...
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-profile" class="tab-content">
+        <div class="profile-header">
+            <img src="" id="profile-avatar" class="profile-avatar" onerror="this.src='https://cdn-icons-png.flaticon.com/512/847/847969.png'">
+            <div class="profile-info">
+                <h2 id="profile-name">Загрузка...</h2>
+                <p>Участник клуба</p>
+            </div>
+        </div>
+
+        <div class="menu-list">
+            <div class="menu-item">
+                <span>🔔 Уведомления</span>
+                <span class="arrow" style="color: #4cd964">Вкл</span>
+            </div>
+            <div class="menu-item">
+                <span>🌍 Язык</span>
+                <span class="arrow">Русский</span>
+            </div>
+            <div class="menu-item" style="color: var(--accent-color)">
+                <span>💬 Написать в поддержку</span>
+                <span class="arrow">➔</span>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px; color: #444; font-size: 12px;">
+            Версия приложения 1.0.0
+        </div>
+    </div>
+
     <div class="bottom-nav">
-        <div class="nav-item active" onclick="switchTab('tab-system', 'Система', this)">
-            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
-            <span>Система</span>
+        <div class="nav-item active" onclick="switchTab('tab-home', '', this)">
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            <span>Главная</span>
         </div>
-        <div class="nav-item" onclick="switchTab('tab-mindset', 'Мышление', this)">
-            <svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7zm2.85 11.1l-.85.6V16h-4v-2.3l-.85-.6C7.8 12.16 7 10.63 7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.63-.8 3.16-2.15 4.1z"/></svg>
-            <span>Мышление</span>
-        </div>
-        <div class="nav-item" onclick="switchTab('tab-guides', 'Гайды', this)">
+        <div class="nav-item" id="nav-library" onclick="switchTab('tab-library', 'База знаний', this)">
             <svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"/></svg>
-            <span>Гайды</span>
+            <span>База</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('tab-ai', 'AI Ментор', this)">
+            <svg viewBox="0 0 24 24"><path d="M12 2c1.1 0 2 .9 2 2h4v2h2v14H4V6h2V4h4c0-1.1.9-2 2-2zm0 2c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1zm6 4H6v12h12V8zm-6 2c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3z"/></svg>
+            <span>Ментор</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('tab-profile', 'Профиль', this)">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            <span>Профиль</span>
         </div>
     </div>
 
     <script>
-        window.Telegram.WebApp.ready();
-        window.Telegram.WebApp.expand();
-        window.Telegram.WebApp.setHeaderColor('#000000');
-        window.Telegram.WebApp.setBackgroundColor('#000000');
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+        tg.setHeaderColor('#000000');
+        tg.setBackgroundColor('#000000');
 
+        // --- ЛОГИКА ЦИТАТЫ ДНЯ ---
+        const quotes = [
+            "Успех — это сумма маленьких усилий, повторяющихся изо дня в день.",
+            "Не жди идеального момента. Бери момент и делай его идеальным.",
+            "Дисциплина — это мост между целями и достижениями.",
+            "Твоё «завтра» начинается сегодня.",
+            "Если ты устал — научись отдыхать, а не сдаваться.",
+            "Боль дисциплины весит граммы, боль сожаления — тонны.",
+            "Работай молча. Пусть твой успех пошумит за тебя.",
+            "Не сравнивай своё начало с чьей-то серединой."
+        ];
+        
+        // Выбираем цитату на основе текущей даты (чтобы весь день была одна)
+        const dateHash = new Date().getDate(); 
+        const quoteIndex = dateHash % quotes.length;
+        document.getElementById('daily-quote').innerText = quotes[quoteIndex];
+
+        // --- ДАННЫЕ ПОЛЬЗОВАТЕЛЯ ---
+        const user = tg.initDataUnsafe.user;
+        if (user) {
+            const fullName = user.first_name + (user.last_name ? " " + user.last_name : "");
+            document.getElementById('username').innerText = user.first_name;
+            document.getElementById('profile-name').innerText = fullName;
+            if (user.photo_url) {
+                document.getElementById('home-avatar').src = user.photo_url;
+                document.getElementById('profile-avatar').src = user.photo_url;
+            }
+        }
+
+        // --- НАВИГАЦИЯ ---
+        function switchTab(tabId, title, element) {
+            // Скрываем все вкладки
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            // Убираем активный класс у кнопок
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            
+            // Показываем нужную вкладку
+            document.getElementById(tabId).classList.add('active');
+            if(element) element.classList.add('active');
+            
+            // Логика заголовка (Header)
+            const header = document.getElementById('main-header');
+            if (tabId === 'tab-home') {
+                header.classList.remove('visible'); // На главной прячем шапку
+            } else {
+                header.classList.add('visible');
+                document.getElementById('header-title').innerText = title;
+            }
+
+            tg.HapticFeedback.impactOccurred('light');
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        // --- ВИДЕО ПЛЕЕР ---
         function loadVideo(element, videoId) {
             var iframe = document.createElement('iframe');
             iframe.src = 'https://www.youtube.com/embed/' + videoId + '?autoplay=1&modestbranding=1&rel=0&showinfo=0&controls=1';
@@ -288,16 +474,6 @@
             iframe.setAttribute('allow', 'autoplay; encrypted-media');
             element.innerHTML = '';
             element.appendChild(iframe);
-        }
-
-        function switchTab(tabId, title, element) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            element.classList.add('active');
-            document.getElementById('page-title').innerText = title;
-            window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
-            window.scrollTo({top: 0, behavior: 'smooth'});
         }
     </script>
 </body>
