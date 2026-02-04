@@ -5,44 +5,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>System App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
         /* --- БАЗА И ЦВЕТА --- */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         :root {
             --bg-color: #000000;
-            --card-bg: #1c1c1e;
+            --card-bg: #151517; /* Чуть темнее для контраста */
             --text-primary: #ffffff;
-            --text-secondary: #8e8e93;
+            --text-secondary: #9ca3af;
             --accent-color: #0a84ff;
             --accent-gradient: linear-gradient(135deg, #0a84ff 0%, #007aff 100%);
             --life-gradient: linear-gradient(90deg, #30d158 0%, #ffd60a 50%, #ff453a 100%);
             --success-gradient: linear-gradient(135deg, #30d158 0%, #208e3b 100%);
-            --separator: rgba(254, 254, 254, 0.12);
+            --separator: rgba(255, 255, 255, 0.08);
             --success: #30d158;
             --danger: #ff453a;
         }
         body {
             background-color: var(--bg-color); color: var(--text-primary);
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Roboto', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; /* Новый шрифт */
             margin: 0; padding: 0; padding-bottom: 95px; padding-top: 50px;
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased; /* Сглаживание шрифтов */
         }
 
+        /* --- PRELOADER (ЭКРАН ЗАГРУЗКИ) --- */
+        #preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
+            transition: opacity 0.5s ease, visibility 0.5s;
+        }
+        .loader-icon { font-size: 60px; animation: pulse 1.5s infinite; }
+
+        /* --- АНИМАЦИИ НАЖАТИЯ (ГЛАВНАЯ ФИШКА) --- */
+        .card, .nav-item, .main-btn, .toggle-btn, .task-add-btn, .battle-reset, .vision-card, .menu-item {
+            transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s, background-color 0.2s;
+            cursor: pointer;
+        }
+        .card:active, .main-btn:active, .vision-card:active { transform: scale(0.96); }
+        .nav-item:active { transform: scale(0.9); }
+        
         /* --- UI ЭЛЕМЕНТЫ --- */
         .header {
             position: fixed; top: 0; left: 0; width: 100%; height: 50px;
-            background: rgba(28, 28, 30, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-bottom: 0.5px solid var(--separator); display: flex; align-items: center; justify-content: center;
+            background: rgba(21, 21, 23, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--separator); display: flex; align-items: center; justify-content: center;
             z-index: 900; opacity: 0; pointer-events: none; transition: opacity 0.3s;
         }
         .header.visible { opacity: 1; pointer-events: auto; }
-        .header h1 { font-size: 17px; font-weight: 600; margin: 0; }
+        .header h1 { font-size: 16px; font-weight: 600; margin: 0; letter-spacing: -0.02em; }
 
-        .tab-content { display: none; padding: 20px 16px; animation: fadeIn 0.3s ease; }
+        .tab-content { display: none; padding: 20px 16px; animation: slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- ONBOARDING (ПРИВЕТСТВИЕ) --- */
+        /* --- ONBOARDING --- */
         .onboarding-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 5000;
@@ -51,169 +73,183 @@
             transition: opacity 0.5s ease;
         }
         .onboarding-overlay.hidden { opacity: 0; pointer-events: none; }
-        
         .slide { display: none; animation: fadeIn 0.5s; flex-direction: column; align-items: center; height: 100%; justify-content: center; }
         .slide.active { display: flex; }
-        
-        .ob-icon { font-size: 80px; margin-bottom: 30px; filter: drop-shadow(0 0 30px rgba(10, 132, 255, 0.4)); }
-        .ob-title { font-size: 28px; font-weight: 800; margin-bottom: 15px; line-height: 1.2; }
-        .ob-text { font-size: 16px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 40px; max-width: 300px; }
+        .ob-icon { font-size: 80px; margin-bottom: 30px; filter: drop-shadow(0 0 40px rgba(10, 132, 255, 0.3)); }
+        .ob-title { font-size: 32px; font-weight: 800; margin-bottom: 15px; line-height: 1.1; letter-spacing: -0.03em; }
+        .ob-text { font-size: 16px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 40px; max-width: 300px; }
         .ob-dots { display: flex; gap: 8px; margin-bottom: 30px; }
-        .dot { width: 8px; height: 8px; background: rgba(255,255,255,0.2); border-radius: 50%; }
-        .dot.active { background: var(--accent-color); width: 20px; border-radius: 4px; transition: all 0.3s; }
+        .dot { width: 8px; height: 8px; background: rgba(255,255,255,0.2); border-radius: 50%; transition: all 0.3s; }
+        .dot.active { background: var(--accent-color); width: 24px; border-radius: 4px; }
 
         /* --- ГЛАВНАЯ --- */
-        .hero-section { padding: 10px 0 20px; text-align: center; }
+        .hero-section { padding: 15px 0 25px; text-align: center; }
         .user-avatar-large {
             width: 80px; height: 80px; border-radius: 50%; background: #333; margin: 0 auto 15px;
-            object-fit: cover; border: 2px solid var(--accent-color); box-shadow: 0 0 20px rgba(10, 132, 255, 0.3);
+            object-fit: cover; border: 3px solid #000; outline: 2px solid var(--accent-color); 
+            box-shadow: 0 10px 40px -10px rgba(10, 132, 255, 0.5);
         }
-        .greeting { font-size: 26px; font-weight: 800; margin-bottom: 5px; }
-        .sub-greeting { color: var(--text-secondary); font-size: 14px; }
+        .greeting { font-size: 28px; font-weight: 800; margin-bottom: 5px; letter-spacing: -0.03em; }
+        .sub-greeting { color: var(--text-secondary); font-size: 15px; font-weight: 500; }
 
         /* --- ВРЕМЯ --- */
         .time-card {
-            background: var(--card-bg); border-radius: 16px; padding: 20px;
-            margin: 20px 0; border: 0.5px solid rgba(255,255,255,0.08);
-            position: relative; overflow: hidden; transition: all 0.3s ease;
+            background: var(--card-bg); border-radius: 20px; padding: 20px;
+            margin: 20px 0; border: 1px solid var(--separator);
+            position: relative; overflow: hidden; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .time-header-row { display: flex; justify-content: space-between; align-items: center; }
-        .date-display { font-size: 17px; font-weight: 700; color: #fff; }
+        .date-display { font-size: 18px; font-weight: 700; color: #fff; letter-spacing: -0.02em; }
         .toggle-btn {
-            background: rgba(255,255,255,0.1); width: 32px; height: 32px; border-radius: 50%;
+            background: rgba(255,255,255,0.05); width: 36px; height: 36px; border-radius: 12px;
             display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.3s;
         }
-        .toggle-icon { font-size: 12px; color: var(--text-secondary); transition: transform 0.3s; }
-        .time-body { margin-top: 20px; opacity: 1; max-height: 200px; overflow: hidden; transition: all 0.4s ease; }
+        .toggle-icon { font-size: 10px; color: var(--text-secondary); transition: transform 0.3s; }
+        .time-body { margin-top: 24px; opacity: 1; max-height: 200px; overflow: hidden; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         .time-card.collapsed .time-body { margin-top: 0; opacity: 0; max-height: 0; }
         .time-card.collapsed .toggle-icon { transform: rotate(180deg); }
-        .time-row { margin-bottom: 15px; }
-        .time-label { display: flex; justify-content: space-between; font-size: 13px; color: #d1d1d6; margin-bottom: 8px; }
-        .time-track { width: 100%; height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; }
-        .time-fill { height: 100%; border-radius: 4px; background: var(--life-gradient); transition: width 1s linear; }
+        .time-row { margin-bottom: 18px; }
+        .time-label { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; }
+        .time-track { width: 100%; height: 10px; background: rgba(255,255,255,0.05); border-radius: 6px; overflow: hidden; }
+        .time-fill { height: 100%; border-radius: 6px; background: var(--life-gradient); transition: width 1s linear; }
 
         /* --- БОЕВОЙ ОТЧЕТ --- */
         .battle-card {
-            background: var(--card-bg); border-radius: 16px; padding: 20px;
-            margin: 20px 0; border: 0.5px solid rgba(255,255,255,0.08);
+            background: var(--card-bg); border-radius: 20px; padding: 24px;
+            margin: 20px 0; border: 1px solid var(--separator);
             transition: box-shadow 0.3s, border-color 0.3s;
         }
-        .battle-card.all-done { border-color: rgba(48, 209, 88, 0.5); box-shadow: 0 0 20px rgba(48, 209, 88, 0.15); }
-        .battle-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .battle-title { font-size: 17px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-        .battle-reset { font-size: 12px; color: var(--accent-color); font-weight: 600; cursor: pointer; padding: 5px 10px; background: rgba(10, 132, 255, 0.1); border-radius: 6px; }
-        .task-input-row { display: flex; gap: 10px; margin-bottom: 15px; }
-        .task-input { flex: 1; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 10px 12px; border-radius: 10px; font-size: 15px; outline: none; }
-        .task-add-btn { width: 42px; background: var(--accent-color); color: #fff; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; }
-        .task-list { display: flex; flex-direction: column; gap: 10px; }
-        .task-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 10px; transition: opacity 0.2s; }
-        .task-item.completed { opacity: 0.6; }
-        .task-item.completed .task-text { text-decoration: line-through; color: #8e8e93; }
-        .task-left { display: flex; align-items: center; gap: 12px; flex: 1; }
-        .custom-checkbox { width: 22px; height: 22px; border-radius: 6px; border: 2px solid #555; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+        .battle-card.all-done { border-color: rgba(48, 209, 88, 0.3); box-shadow: 0 0 30px rgba(48, 209, 88, 0.1); }
+        .battle-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .battle-title { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+        .battle-reset { font-size: 13px; color: var(--accent-color); font-weight: 600; cursor: pointer; padding: 6px 12px; background: rgba(10, 132, 255, 0.1); border-radius: 8px; }
+        .task-input-row { display: flex; gap: 10px; margin-bottom: 20px; }
+        .task-input { flex: 1; background: #000; border: 1px solid var(--separator); color: #fff; padding: 12px 16px; border-radius: 12px; font-size: 16px; outline: none; font-family: 'Inter', sans-serif; }
+        .task-input:focus { border-color: var(--accent-color); }
+        .task-add-btn { width: 48px; background: var(--accent-color); color: #fff; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; }
+        .task-list { display: flex; flex-direction: column; gap: 12px; }
+        .task-item { display: flex; align-items: center; justify-content: space-between; padding: 14px; background: rgba(255,255,255,0.03); border-radius: 12px; transition: opacity 0.2s; border: 1px solid transparent; }
+        .task-item:active { background: rgba(255,255,255,0.06); }
+        .task-item.completed { opacity: 0.5; }
+        .task-item.completed .task-text { text-decoration: line-through; color: var(--text-secondary); }
+        .task-left { display: flex; align-items: center; gap: 14px; flex: 1; }
+        .custom-checkbox { width: 24px; height: 24px; border-radius: 8px; border: 2px solid #444; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
         .task-item.completed .custom-checkbox { background: var(--success); border-color: var(--success); }
         .custom-checkbox::after { content: '✓'; color: #000; font-size: 14px; font-weight: 800; display: none; }
         .task-item.completed .custom-checkbox::after { display: block; }
-        .task-text { font-size: 15px; font-weight: 500; }
-        .task-del { color: #ff453a; padding: 5px; cursor: pointer; font-size: 18px; }
-        .battle-progress { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 15px; overflow: hidden; }
-        .battle-fill { height: 100%; background: var(--success-gradient); width: 0%; transition: width 0.3s; }
+        .task-text { font-size: 16px; font-weight: 500; }
+        .task-del { color: var(--text-secondary); padding: 8px; cursor: pointer; font-size: 20px; }
+        .battle-progress { height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; margin-top: 20px; overflow: hidden; }
+        .battle-fill { height: 100%; background: var(--success-gradient); width: 0%; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
 
         /* --- VISION BOARD --- */
-        .vision-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
-        .vision-card { aspect-ratio: 1 / 1; background: var(--card-bg); border-radius: 14px; position: relative; overflow: hidden; border: 0.5px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; cursor: pointer; transition: transform 0.1s; }
-        .vision-card:active { transform: scale(0.98); }
-        .vision-card.filled::before { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); z-index: 1; }
-        .vision-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
-        .vision-title { position: relative; z-index: 2; font-size: 14px; font-weight: 700; padding: 10px; color: #fff; width: 100%; margin-top: auto; }
-        .vision-card.empty .vision-title { margin-top: 10px; color: var(--text-secondary); }
-        .vision-icon { font-size: 32px; color: #333; }
+        .vision-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+        .vision-card { aspect-ratio: 1 / 1; background: var(--card-bg); border-radius: 16px; position: relative; overflow: hidden; border: 1px solid var(--separator); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .vision-card.filled::before { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%); z-index: 1; }
+        .vision-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; transition: transform 0.5s; }
+        .vision-card:active .vision-img { transform: scale(1.05); }
+        .vision-title { position: relative; z-index: 2; font-size: 13px; font-weight: 700; padding: 12px; color: #fff; width: 100%; margin-top: auto; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .vision-card.empty .vision-title { margin-top: 10px; color: var(--text-secondary); text-shadow: none; }
+        .vision-icon { font-size: 32px; color: #333; transition: color 0.2s; }
         .vision-plus { font-size: 40px; color: var(--accent-color); }
-        .vision-delete { position: absolute; top: 5px; right: 5px; z-index: 10; background: rgba(0,0,0,0.6); width: 24px; height: 24px; border-radius: 50%; color: #ff453a; display: flex; align-items: center; justify-content: center; font-size: 16px; backdrop-filter: blur(4px); }
+        .vision-delete { position: absolute; top: 8px; right: 8px; z-index: 10; background: rgba(0,0,0,0.5); width: 28px; height: 28px; border-radius: 50%; color: #ff453a; display: flex; align-items: center; justify-content: center; font-size: 14px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
 
         /* --- VICTORY OVERLAY --- */
         .victory-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9); z-index: 3000;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            opacity: 0; pointer-events: none; transition: opacity 0.5s; backdrop-filter: blur(10px);
+            opacity: 0; pointer-events: none; transition: opacity 0.5s; backdrop-filter: blur(20px);
         }
         .victory-overlay.show { opacity: 1; pointer-events: auto; }
-        .trophy-anim { font-size: 100px; margin-bottom: 20px; animation: bounce 1.5s infinite alternate; filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.6)); }
+        .trophy-anim { font-size: 100px; margin-bottom: 20px; animation: bounce 1.5s infinite alternate; filter: drop-shadow(0 0 50px rgba(255, 215, 0, 0.5)); }
         @keyframes bounce { from { transform: scale(1); } to { transform: scale(1.1); } }
-        .victory-title { font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
-        .victory-sub { font-size: 16px; color: #ffd700; font-weight: 600; margin-bottom: 30px; }
+        .victory-title { font-size: 32px; font-weight: 900; color: #fff; margin-bottom: 10px; text-transform: uppercase; letter-spacing: -0.02em; }
+        .victory-sub { font-size: 18px; color: #ffd700; font-weight: 600; margin-bottom: 40px; }
         .share-btn {
-            background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2);
-            padding: 12px 24px; border-radius: 30px; color: #fff; font-weight: 600; cursor: pointer;
-            display: flex; align-items: center; gap: 8px; font-size: 14px;
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1);
+            padding: 16px 32px; border-radius: 40px; color: #fff; font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; gap: 10px; font-size: 16px; transition: background 0.2s;
         }
+        .share-btn:active { background: rgba(255,255,255,0.2); }
 
         /* --- ОБЩЕЕ --- */
-        .progress-card { background: var(--card-bg); border-radius: 16px; padding: 20px; margin: 20px 0; border: 0.5px solid rgba(255,255,255,0.1); }
-        .progress-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; font-weight: 600; }
-        .progress-track { width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
-        .progress-fill { width: 0%; height: 100%; background: var(--accent-gradient); border-radius: 4px; transition: width 0.5s ease; }
+        .progress-card { background: var(--card-bg); border-radius: 20px; padding: 24px; margin: 20px 0; border: 1px solid var(--separator); }
+        .progress-header { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 15px; font-weight: 600; }
+        .progress-track { width: 100%; height: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; overflow: hidden; }
+        .progress-fill { width: 0%; height: 100%; background: var(--accent-gradient); border-radius: 5px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
 
         .quote-card {
-            background: linear-gradient(135deg, #1c1c1e 0%, #2c2c2e 100%);
-            border-radius: 16px; padding: 24px; position: relative; overflow: hidden;
-            border: 0.5px solid rgba(255,255,255,0.08); margin-bottom: 25px;
+            background: linear-gradient(135deg, #1c1c1e 0%, #252528 100%);
+            border-radius: 20px; padding: 24px; position: relative; overflow: hidden;
+            border: 1px solid var(--separator); margin-bottom: 25px;
         }
-        .quote-icon { font-size: 40px; color: rgba(255,255,255,0.1); position: absolute; top: 10px; left: 15px; }
-        .quote-text { font-size: 17px; font-style: italic; line-height: 1.4; position: relative; z-index: 2; margin-bottom: 12px; }
-        .quote-author { font-size: 14px; color: var(--accent-color); font-weight: 700; text-align: right; display: block; position: relative; z-index: 2; text-shadow: 0 2px 10px rgba(10, 132, 255, 0.2); }
+        .quote-icon { font-size: 60px; color: rgba(255,255,255,0.05); position: absolute; top: -10px; left: 10px; font-family: serif; }
+        .quote-text { font-size: 18px; font-weight: 500; font-style: italic; line-height: 1.5; position: relative; z-index: 2; margin-bottom: 16px; color: #e5e7eb; }
+        .quote-author { font-size: 14px; color: var(--accent-color); font-weight: 700; text-align: right; display: block; position: relative; z-index: 2; text-transform: uppercase; letter-spacing: 0.05em; }
 
-        .main-btn { display: block; width: 100%; padding: 16px; background: var(--accent-gradient); color: #fff; text-align: center; border-radius: 14px; font-size: 17px; font-weight: 600; text-decoration: none; box-shadow: 0 4px 15px rgba(10, 132, 255, 0.4); transition: transform 0.1s; }
-        .main-btn:active { transform: scale(0.98); }
+        .main-btn {
+            display: block; width: 100%; padding: 18px; background: var(--accent-gradient); color: #fff;
+            text-align: center; border-radius: 16px; font-size: 17px; font-weight: 700; text-decoration: none;
+            box-shadow: 0 10px 30px -10px rgba(10, 132, 255, 0.5); border: 1px solid rgba(255,255,255,0.1);
+        }
 
-        .section-header { font-size: 22px; font-weight: 800; margin: 30px 0 15px; color: #fff; padding-left: 5px; border-left: 3px solid var(--accent-color); line-height: 1; }
-        .card { background: linear-gradient(180deg, rgba(35,35,37,1) 0%, rgba(28,28,30,1) 100%); border-radius: 14px; overflow: hidden; margin-bottom: 20px; position: relative; border: 0.5px solid rgba(255, 255, 255, 0.08); box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.15), inset 0 0 0 1px rgba(255, 255, 255, 0.03), 0 8px 24px rgba(0, 0, 0, 0.4); transition: transform 0.2s; }
-        .card.done { border-color: rgba(48, 209, 88, 0.3); } 
-        .card.done::after { content: '✓'; position: absolute; top: 10px; right: 10px; background: var(--success); color: #000; font-weight: bold; font-size: 12px; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 5; }
-        .card-body { padding: 16px; }
-        .card-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; line-height: 1.3; }
-        .badge { display: inline-block; padding: 4px 8px; background: rgba(10, 132, 255, 0.15); color: var(--accent-color); border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; }
+        .section-header { font-size: 24px; font-weight: 800; margin: 35px 0 20px; color: #fff; padding-left: 10px; border-left: 4px solid var(--accent-color); line-height: 1; letter-spacing: -0.03em; }
+        .card { background: linear-gradient(180deg, #1c1c1e 0%, #151517 100%); border-radius: 18px; overflow: hidden; margin-bottom: 24px; position: relative; border: 1px solid var(--separator); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .card.done { border-color: rgba(48, 209, 88, 0.4); } 
+        .card.done::after { content: '✓'; position: absolute; top: 12px; right: 12px; background: var(--success); color: #000; font-weight: 800; font-size: 12px; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 5; box-shadow: 0 4px 10px rgba(48, 209, 88, 0.4); }
+        .card-body { padding: 20px; }
+        .card-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; line-height: 1.2; letter-spacing: -0.02em; }
+        .card-desc { font-size: 15px; color: var(--text-secondary); margin-bottom: 15px; line-height: 1.5; }
+        .badge { display: inline-block; padding: 6px 10px; background: rgba(10, 132, 255, 0.1); color: var(--accent-color); border-radius: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.05em; }
         .video-facade { position: relative; padding-bottom: 56.25%; height: 0; background-color: #000; cursor: pointer; }
-        .video-cover-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
-        .play-button { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 56px; height: 56px; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 8px 25px rgba(0,0,0,0.4); }
-        .play-button::after { content: ''; width: 0; height: 0; border-left: 16px solid #fff; border-top: 9px solid transparent; border-bottom: 9px solid transparent; margin-left: 4px; }
+        .video-cover-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.8; transition: opacity 0.3s; }
+        .play-button { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 64px; height: 64px; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(12px); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        .play-button::after { content: ''; width: 0; height: 0; border-left: 20px solid #fff; border-top: 12px solid transparent; border-bottom: 12px solid transparent; margin-left: 6px; }
 
-        audio { width: 100%; height: 40px; margin-top: 5px; }
-        details { background: rgba(255,255,255,0.05); border-radius: 10px; }
-        summary { padding: 12px; cursor: pointer; font-weight: 600; color: var(--accent-color); list-style: none; display: flex; justify-content: space-between; }
-        summary::after { content: '+'; }
+        audio { width: 100%; height: 40px; margin-top: 5px; opacity: 0.8; }
+        details { background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid var(--separator); }
+        summary { padding: 16px; cursor: pointer; font-weight: 600; color: var(--accent-color); list-style: none; display: flex; justify-content: space-between; align-items: center; }
+        summary::after { content: '+'; font-size: 20px; font-weight: 300; }
         details[open] summary::after { content: '-'; }
-        .text-content { padding: 16px; font-size: 15px; line-height: 1.6; color: #d1d1d6; border-top: 1px solid rgba(255,255,255,0.05); white-space: pre-wrap; }
+        .text-content { padding: 20px; font-size: 16px; line-height: 1.7; color: #d1d1d6; border-top: 1px solid var(--separator); white-space: pre-wrap; }
         .text-content b { color: #fff; font-weight: 700; }
         .text-content i { color: var(--text-secondary); font-style: italic; }
-        .text-content ul { padding-left: 20px; margin: 10px 0; }
-        .highlight { color: var(--accent-color); font-weight: 600; }
+        .text-content ul { padding-left: 20px; margin: 15px 0; }
+        .highlight { color: var(--accent-color); font-weight: 700; }
 
-        .profile-header { display: flex; align-items: center; margin-bottom: 30px; }
-        .profile-avatar { width: 70px; height: 70px; border-radius: 50%; background: #333; margin-right: 15px; object-fit: cover; }
-        .profile-info h2 { margin: 0; font-size: 20px; }
-        .profile-info p { margin: 5px 0 0 0; color: var(--text-secondary); font-size: 14px; }
-        .menu-list { background: var(--card-bg); border-radius: 14px; overflow: hidden; border: 0.5px solid rgba(255, 255, 255, 0.08); }
-        .menu-item { padding: 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; font-size: 16px; text-decoration: none; color: #fff; }
+        .profile-header { display: flex; align-items: center; margin-bottom: 35px; }
+        .profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: #222; margin-right: 20px; object-fit: cover; border: 2px solid var(--separator); }
+        .profile-info h2 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.02em; }
+        .profile-info p { margin: 5px 0 0 0; color: var(--text-secondary); font-size: 15px; }
+        .menu-list { background: var(--card-bg); border-radius: 20px; overflow: hidden; border: 1px solid var(--separator); }
+        .menu-item { padding: 18px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--separator); cursor: pointer; font-size: 16px; text-decoration: none; color: #fff; font-weight: 500; }
         .menu-item:last-child { border-bottom: none; }
         .menu-item:active { background: rgba(255,255,255,0.05); }
 
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(5px); }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(8px); }
         .modal.open { display: flex; animation: fadeIn 0.3s; }
-        .modal-content { background: #1c1c1e; border-radius: 20px; padding: 25px; width: 100%; max-width: 400px; border: 1px solid rgba(255,255,255,0.1); position: relative; }
-        .modal-close { position: absolute; top: 15px; right: 15px; font-size: 24px; color: #8e8e93; cursor: pointer; }
+        .modal-content { background: #1c1c1e; border-radius: 24px; padding: 30px; width: 100%; max-width: 400px; border: 1px solid var(--separator); position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+        .modal-close { position: absolute; top: 20px; right: 20px; font-size: 28px; color: var(--text-secondary); cursor: pointer; }
 
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 85px; background: rgba(28, 28, 30, 0.92); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-top: 0.5px solid var(--separator); display: flex; justify-content: space-between; padding: 10px 10px; z-index: 1000; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; color: #8e8e93; font-size: 10px; font-weight: 500; width: 20%; cursor: pointer; transition: color 0.2s; }
-        .nav-item svg { width: 24px; height: 24px; margin-bottom: 5px; fill: currentColor; }
-        .nav-item.active { color: var(--accent-color); }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 85px; background: rgba(21, 21, 23, 0.9); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-top: 1px solid var(--separator); display: flex; justify-content: space-between; padding: 10px 10px; z-index: 1000; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; color: #6b7280; font-size: 10px; font-weight: 600; width: 20%; cursor: pointer; transition: color 0.2s; padding-top: 5px; }
+        .nav-item svg { width: 26px; height: 26px; margin-bottom: 4px; fill: currentColor; transition: transform 0.2s; }
+        .nav-item.active { color: #fff; } /* Белый активный цвет, как в iOS */
+        .nav-item.active svg { transform: translateY(-2px); }
 
-        .ai-placeholder { text-align: center; padding: 60px 20px; }
-        .ai-icon { font-size: 70px; margin-bottom: 20px; }
+        .ai-placeholder { text-align: center; padding: 80px 20px; }
+        .ai-icon { font-size: 80px; margin-bottom: 30px; display: inline-block; animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
+        @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
+
+    <div id="preloader">
+        <div class="loader-icon">🏴</div>
+    </div>
 
     <div id="onboarding" class="onboarding-overlay hidden">
         <div class="slide active" id="slide-1">
@@ -333,7 +369,7 @@
             <div class="menu-item" onclick="openModal()"><span>ℹ️ О сути (Манифест)</span><span class="arrow">Читать</span></div>
             <div class="menu-item" onclick="resetProgress()"><span style="color: #ff453a">🔄 Начать заново (Сброс)</span><span class="arrow">⟳</span></div>
         </div>
-        <div style="text-align: center; margin-top: 30px; color: #444; font-size: 12px;">Версия 15.1 (Updated)</div>
+        <div style="text-align: center; margin-top: 30px; color: #444; font-size: 12px;">Версия 16.0 (Premium)</div>
     </div>
 
     <input type="file" id="vision-file-input" accept="image/*" style="display: none;">
@@ -350,6 +386,14 @@
     <script>
         const tg = window.Telegram.WebApp;
         tg.ready(); tg.expand(); tg.setHeaderColor('#000000'); tg.setBackgroundColor('#000000');
+
+        // PRELOADER
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('preloader').style.opacity = '0';
+                setTimeout(() => document.getElementById('preloader').style.visibility = 'hidden', 500);
+            }, 800);
+        });
 
         // --- ONBOARDING LOGIC ---
         function checkOnboarding() {
