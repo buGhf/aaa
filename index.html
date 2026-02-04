@@ -17,6 +17,7 @@
             --accent-gradient: linear-gradient(135deg, #0a84ff 0%, #007aff 100%);
             --life-gradient: linear-gradient(90deg, #30d158 0%, #ffd60a 50%, #ff453a 100%);
             --success-gradient: linear-gradient(135deg, #30d158 0%, #208e3b 100%);
+            --gold-gradient: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%); /* Золото */
             --separator: rgba(254, 254, 254, 0.12);
             --success: #30d158;
             --danger: #ff453a;
@@ -71,7 +72,7 @@
         .time-track { width: 100%; height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; }
         .time-fill { height: 100%; border-radius: 4px; background: var(--life-gradient); transition: width 1s linear; }
 
-        /* --- БОЕВОЙ ОТЧЕТ (TODO LIST) --- */
+        /* --- БОЕВОЙ ОТЧЕТ --- */
         .battle-card {
             background: var(--card-bg); border-radius: 16px; padding: 20px;
             margin: 20px 0; border: 0.5px solid rgba(255,255,255,0.08);
@@ -86,7 +87,6 @@
         .battle-title { font-size: 17px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
         .battle-reset { font-size: 12px; color: var(--accent-color); font-weight: 600; cursor: pointer; padding: 5px 10px; background: rgba(10, 132, 255, 0.1); border-radius: 6px; }
 
-        /* Ввод задач */
         .task-input-row { display: flex; gap: 10px; margin-bottom: 15px; }
         .task-input {
             flex: 1; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
@@ -97,7 +97,6 @@
             display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer;
         }
 
-        /* Список задач */
         .task-list { display: flex; flex-direction: column; gap: 10px; }
         .task-item {
             display: flex; align-items: center; justify-content: space-between;
@@ -106,7 +105,6 @@
         }
         .task-item.completed { opacity: 0.6; }
         .task-item.completed .task-text { text-decoration: line-through; color: #8e8e93; }
-        
         .task-left { display: flex; align-items: center; gap: 12px; flex: 1; }
         .custom-checkbox {
             width: 22px; height: 22px; border-radius: 6px; border: 2px solid #555;
@@ -115,16 +113,34 @@
         .task-item.completed .custom-checkbox { background: var(--success); border-color: var(--success); }
         .custom-checkbox::after { content: '✓'; color: #000; font-size: 14px; font-weight: 800; display: none; }
         .task-item.completed .custom-checkbox::after { display: block; }
-        
         .task-text { font-size: 15px; font-weight: 500; }
         .task-del { color: #ff453a; padding: 5px; cursor: pointer; font-size: 18px; }
 
-        /* Прогресс задач */
         .battle-progress { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 15px; overflow: hidden; }
         .battle-fill { height: 100%; background: var(--success-gradient); width: 0%; transition: width 0.3s; }
 
+        /* --- VICTORY OVERLAY (САЛЮТ) --- */
+        .victory-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 3000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.5s;
+            backdrop-filter: blur(10px);
+        }
+        .victory-overlay.show { opacity: 1; pointer-events: auto; }
+        
+        .trophy-anim {
+            font-size: 100px; margin-bottom: 20px;
+            animation: bounce 1.5s infinite alternate;
+            filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.6));
+        }
+        @keyframes bounce { from { transform: scale(1); } to { transform: scale(1.1); } }
+        
+        .victory-title { font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .victory-sub { font-size: 16px; color: #ffd700; font-weight: 600; }
 
-        /* --- ОСТАЛЬНОЕ (КАРТОЧКИ УРОКОВ) --- */
+
+        /* --- ОСТАЛЬНОЕ --- */
         .progress-card {
             background: var(--card-bg); border-radius: 16px; padding: 20px;
             margin: 20px 0; border: 0.5px solid rgba(255,255,255,0.1);
@@ -227,6 +243,12 @@
 </head>
 <body>
 
+    <div id="victory-modal" class="victory-overlay">
+        <div class="trophy-anim">🏆</div>
+        <div class="victory-title">ДЕНЬ ВЗЯТ</div>
+        <div class="victory-sub">Ты машина.</div>
+    </div>
+
     <div class="header" id="main-header"><h1 id="header-title">База знаний</h1></div>
 
     <div id="tab-home" class="tab-content active">
@@ -272,8 +294,7 @@
                 <div class="task-add-btn" onclick="addTask()">+</div>
             </div>
 
-            <div class="task-list" id="task-list">
-                </div>
+            <div class="task-list" id="task-list"></div>
 
             <div class="battle-progress">
                 <div class="battle-fill" id="battle-bar"></div>
@@ -366,6 +387,7 @@
                 <div class="card-title">Выгорание: выход есть</div>
             </div>
         </div>
+
         <div class="card" id="item-audio1">
             <div class="card-body">
                 <span class="badge">Аудио</span>
@@ -373,6 +395,7 @@
                 <audio controls onplay="trackProgress('audio1')"><source src="https://dl.dropboxusercontent.com/scl/fi/m3z94htt3v3ttu3z7agsr/voice1.mp3?rlkey=her5gtxpmpjfprzdyndhaxnk3" type="audio/mpeg"></audio>
             </div>
         </div>
+
         <div class="card" id="item-audio2">
             <div class="card-body">
                 <span class="badge">Аудио</span>
@@ -491,7 +514,7 @@
                 <span class="arrow">Сброс</span>
             </div>
         </div>
-        <div style="text-align: center; margin-top: 30px; color: #444; font-size: 12px;">Версия 2.0.0 (Battle Ready)</div>
+        <div style="text-align: center; margin-top: 30px; color: #444; font-size: 12px;">Версия 2.1.0 (Victory Mode)</div>
     </div>
 
     <div class="modal" id="about-modal">
@@ -576,7 +599,7 @@
             document.getElementById('time-widget').classList.add('collapsed');
         }
 
-        // --- БОЕВОЙ ОТЧЕТ (ЛОГИКА) ---
+        // --- БОЕВОЙ ОТЧЕТ ---
         let tasks = JSON.parse(localStorage.getItem('battleTasks')) || [];
 
         function renderTasks() {
@@ -600,12 +623,10 @@
                 list.appendChild(div);
             });
 
-            // Обновляем прогресс
             const total = tasks.length;
             const percent = total === 0 ? 0 : (completedCount / total) * 100;
             document.getElementById('battle-bar').style.width = percent + '%';
             
-            // Эффект победы
             const card = document.getElementById('battle-card');
             if (total > 0 && percent === 100) {
                 card.classList.add('all-done');
@@ -626,9 +647,26 @@
         }
 
         function toggleTask(index) {
+            const was100 = (tasks.length > 0 && tasks.filter(t => t.done).length === tasks.length);
+            
             tasks[index].done = !tasks[index].done;
             saveTasks();
             tg.HapticFeedback.selectionChanged();
+
+            // Проверяем победу (если стало 100%, а было меньше)
+            const now100 = (tasks.length > 0 && tasks.filter(t => t.done).length === tasks.length);
+            if (!was100 && now100) {
+                showVictory();
+            }
+        }
+
+        function showVictory() {
+            const overlay = document.getElementById('victory-modal');
+            overlay.classList.add('show');
+            tg.HapticFeedback.notificationOccurred('success');
+            setTimeout(() => {
+                overlay.classList.remove('show');
+            }, 2500);
         }
 
         function deleteTask(index) {
@@ -639,7 +677,7 @@
 
         function resetTasks() {
             if(confirm('Начать новый день? Все выполненные задачи будут удалены.')) {
-                tasks = tasks.filter(t => !t.done); // Оставляем только невыполненные
+                tasks = tasks.filter(t => !t.done);
                 saveTasks();
                 tg.HapticFeedback.notificationOccurred('success');
             }
@@ -649,8 +687,6 @@
             localStorage.setItem('battleTasks', JSON.stringify(tasks));
             renderTasks();
         }
-        
-        // Загрузка задач при старте
         renderTasks();
 
         // --- ДАННЫЕ ЮЗЕРА ---
