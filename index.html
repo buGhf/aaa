@@ -15,7 +15,8 @@
             --text-secondary: #8e8e93;
             --accent-color: #0a84ff;
             --accent-gradient: linear-gradient(135deg, #0a84ff 0%, #007aff 100%);
-            --danger-gradient: linear-gradient(135deg, #ff453a 0%, #ff3b30 100%); /* Градиент "Опасность" */
+            /* Градиент Жизни: От спокойного зеленого к активному красному */
+            --life-gradient: linear-gradient(90deg, #30d158 0%, #ffd60a 50%, #ff453a 100%);
             --separator: rgba(254, 254, 254, 0.12);
             --success: #30d158;
         }
@@ -48,26 +49,41 @@
         .greeting { font-size: 26px; font-weight: 800; margin-bottom: 5px; }
         .sub-greeting { color: var(--text-secondary); font-size: 14px; }
 
-        /* --- НОВЫЙ БЛОК: MEMENTO MORI (КАЛЕНДАРЬ) --- */
+        /* --- БЛОК ВРЕМЕНИ (Обновленный) --- */
         .time-card {
-            background: rgba(28, 28, 30, 0.5); border-radius: 16px; padding: 20px;
-            margin: 20px 0; border: 1px solid rgba(255, 69, 58, 0.2); /* Красная обводка */
+            background: var(--card-bg); border-radius: 16px; padding: 20px;
+            margin: 20px 0; border: 0.5px solid rgba(255,255,255,0.08);
             position: relative; overflow: hidden;
+            transition: all 0.3s ease;
         }
-        .time-header {
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;
-        }
-        .time-title { font-size: 15px; font-weight: 700; color: #ff453a; text-transform: uppercase; letter-spacing: 0.5px; }
-        .time-icon { font-size: 18px; animation: pulse 2s infinite; }
         
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        /* Заголовок карточки с датой и кнопкой */
+        .time-header-row {
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .date-display {
+            font-size: 17px; font-weight: 700; color: #fff;
+        }
+        .toggle-btn {
+            background: rgba(255,255,255,0.1); width: 32px; height: 32px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .toggle-icon { font-size: 12px; color: var(--text-secondary); transition: transform 0.3s; }
+        
+        /* Тело карточки (скрываемое) */
+        .time-body {
+            margin-top: 20px; opacity: 1; max-height: 200px; overflow: hidden; transition: all 0.4s ease;
+        }
+        /* Состояние скрыто */
+        .time-card.collapsed .time-body { margin-top: 0; opacity: 0; max-height: 0; }
+        .time-card.collapsed .toggle-icon { transform: rotate(180deg); }
 
-        .time-row { margin-bottom: 12px; }
-        .time-label { display: flex; justify-content: space-between; font-size: 13px; color: #d1d1d6; margin-bottom: 6px; }
-        .time-track { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
-        .time-fill { height: 100%; border-radius: 3px; background: var(--danger-gradient); transition: width 1s linear; }
-        
-        .time-hint { font-size: 11px; color: #8e8e93; margin-top: 10px; font-style: italic; }
+        .time-row { margin-bottom: 15px; }
+        .time-label { display: flex; justify-content: space-between; font-size: 13px; color: #d1d1d6; margin-bottom: 8px; }
+        .time-track { width: 100%; height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; }
+        /* Градиентная заливка */
+        .time-fill { height: 100%; border-radius: 4px; background: var(--life-gradient); transition: width 1s linear; }
 
         /* Прогресс бар (Уровень) */
         .progress-card {
@@ -104,17 +120,15 @@
             box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.15), inset 0 0 0 1px rgba(255, 255, 255, 0.03), 0 8px 24px rgba(0, 0, 0, 0.4);
             transition: transform 0.2s;
         }
-        .card.done { border-color: rgba(48, 209, 88, 0.3); } /* Зеленая обводка если пройдено */
+        .card.done { border-color: rgba(48, 209, 88, 0.3); } 
         .card.done::after {
             content: '✓'; position: absolute; top: 10px; right: 10px; 
             background: var(--success); color: #000; font-weight: bold; font-size: 12px;
             width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 5;
         }
-        
         .card-body { padding: 16px; }
         .card-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; line-height: 1.3; }
         .badge { display: inline-block; padding: 4px 8px; background: rgba(10, 132, 255, 0.15); color: var(--accent-color); border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; }
-        
         .video-facade { position: relative; padding-bottom: 56.25%; height: 0; background-color: #000; cursor: pointer; }
         .video-cover-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
         .play-button { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 56px; height: 56px; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 8px 25px rgba(0,0,0,0.4); }
@@ -188,33 +202,35 @@
             <div class="sub-greeting">Начни забирать своё сегодня.</div>
         </div>
 
-        <div class="time-card">
-            <div class="time-header">
-                <span class="time-title">⚠️ Времени нет</span>
-                <span class="time-icon">⏳</span>
+        <div class="time-card" id="time-widget">
+            <div class="time-header-row">
+                <div class="date-display" id="current-date">Загрузка даты...</div>
+                <div class="toggle-btn" onclick="toggleTimeWidget()">
+                    <span class="toggle-icon">▼</span>
+                </div>
             </div>
             
-            <div class="time-row">
-                <div class="time-label">
-                    <span>Текущий год сожжен:</span>
-                    <span id="year-percent" style="color:#ff453a; font-weight:700;">0%</span>
+            <div class="time-body">
+                <div class="time-row">
+                    <div class="time-label">
+                        <span>Год прошел на:</span>
+                        <span id="year-percent" style="font-weight:700;">0%</span>
+                    </div>
+                    <div class="time-track">
+                        <div class="time-fill" id="year-bar" style="width: 0%"></div>
+                    </div>
                 </div>
-                <div class="time-track">
-                    <div class="time-fill" id="year-bar" style="width: 0%"></div>
-                </div>
-            </div>
 
-            <div class="time-row" style="margin-bottom:0;">
-                <div class="time-label">
-                    <span>День сегодня ушел:</span>
-                    <span id="day-percent" style="color:#ff453a; font-weight:700;">0%</span>
-                </div>
-                <div class="time-track">
-                    <div class="time-fill" id="day-bar" style="width: 0%"></div>
+                <div class="time-row" style="margin-bottom:0;">
+                    <div class="time-label">
+                        <span>День прошел на:</span>
+                        <span id="day-percent" style="font-weight:700;">0%</span>
+                    </div>
+                    <div class="time-track">
+                        <div class="time-fill" id="day-bar" style="width: 0%"></div>
+                    </div>
                 </div>
             </div>
-            
-            <div class="time-hint">Эти часы не вернуть. Работай быстрее.</div>
         </div>
         <div class="progress-card">
             <div class="progress-header">
@@ -429,7 +445,7 @@
                 <span class="arrow">Сброс</span>
             </div>
         </div>
-        <div style="text-align: center; margin-top: 30px; color: #444; font-size: 12px;">Версия 1.3.0 (Memento Mori)</div>
+        <div style="text-align: center; margin-top: 30px; color: #444; font-size: 12px;">Версия 1.4.0 (Balance)</div>
     </div>
 
     <div class="modal" id="about-modal">
@@ -478,34 +494,50 @@
             "Дисциплина — это мост между целями и достижениями.",
             "Твоё «завтра» начинается сегодня.",
             "Если ты устал — научись отдыхать, а не сдаваться.",
-            "Боль дисциплины весит граммы, боль сожаления — тонны.",
-            "Работай молча. Пусть твой успех пошумит за тебя.",
-            "Не сравнивай своё начало с чьей-то серединой."
+            "Боль дисциплины весит граммы, боль сожаления — тонны."
         ];
         document.getElementById('daily-quote').innerText = quotes[new Date().getDate() % quotes.length];
 
-        // --- MEMENTO MORI (ТАЙМЕР СМЕРТИ ВРЕМЕНИ) ---
-        function updateTimeDeath() {
+        // --- ДАТА И ВРЕМЯ (НОВОЕ) ---
+        function updateDateAndWidget() {
             const now = new Date();
             
-            // Сжигание года
+            // 1. Показываем дату (например: "4 февраля, Среда")
+            const options = { day: 'numeric', month: 'long', weekday: 'long' };
+            const dateStr = now.toLocaleDateString('ru-RU', options);
+            document.getElementById('current-date').innerText = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+
+            // 2. Считаем проценты для шкал
             const startOfYear = new Date(now.getFullYear(), 0, 1);
             const endOfYear = new Date(now.getFullYear() + 1, 0, 1);
             const yearPercent = ((now - startOfYear) / (endOfYear - startOfYear)) * 100;
             
-            // Сжигание дня
             const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
             const dayPercent = ((now - startOfDay) / (endOfDay - startOfDay)) * 100;
 
             document.getElementById('year-bar').style.width = yearPercent + '%';
             document.getElementById('year-percent').innerText = yearPercent.toFixed(1) + '%';
-            
             document.getElementById('day-bar').style.width = dayPercent + '%';
             document.getElementById('day-percent').innerText = dayPercent.toFixed(1) + '%';
         }
-        setInterval(updateTimeDeath, 1000); // Обновляем каждую секунду
-        updateTimeDeath(); // Первый запуск
+        setInterval(updateDateAndWidget, 1000);
+        updateDateAndWidget();
+
+        // --- ФУНКЦИЯ СКРЫТИЯ/ПОКАЗА КАЛЕНДАРЯ ---
+        function toggleTimeWidget() {
+            const widget = document.getElementById('time-widget');
+            const isCollapsed = widget.classList.toggle('collapsed');
+            
+            // Сохраняем выбор пользователя
+            localStorage.setItem('timeWidgetHidden', isCollapsed);
+            tg.HapticFeedback.selectionChanged();
+        }
+
+        // При загрузке проверяем, скрывал ли пользователь виджет
+        if(localStorage.getItem('timeWidgetHidden') === 'true') {
+            document.getElementById('time-widget').classList.add('collapsed');
+        }
 
         // --- ДАННЫЕ ЮЗЕРА ---
         const user = tg.initDataUnsafe.user;
