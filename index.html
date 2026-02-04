@@ -10,59 +10,55 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     
     <style>
-        /* --- БАЗА И ЦВЕТА (EMERALD & GOLD LUXURY) --- */
+        /* --- БАЗА И ЦВЕТА (PORSCHE DARK GREEN & GOLD) --- */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         :root {
-            /* ГЛУБОКИЙ ИЗУМРУДНЫЙ (ROLEX GREEN) */
-            --bg-color: #002817; 
-            
-            --card-bg: rgba(255, 255, 255, 0.03); /* Ультра-прозрачное стекло */
+            /* БАЗА: Глубокий темный зеленый (почти черный) */
+            --bg-color: #06140b; 
+            --card-bg: rgba(255, 255, 255, 0.03);
             --text-primary: #ffffff;
-            --text-secondary: #e0e0e0; /* Чуть светлее для контраста с зеленым */
+            --text-secondary: #9ca3af;
             
-            /* RICH GOLD ACCENT */
-            --accent-color: #FFD700; /* Насыщенный золотой */
-            --accent-glow: rgba(255, 215, 0, 0.5);
-            --accent-gradient: linear-gradient(135deg, #FFD700 0%, #E5C100 100%); /* Золото -> Темное золото */
+            /* АКЦЕНТ: Благородное золото */
+            --accent-color: #fbbf24;
+            --accent-glow: rgba(251, 191, 36, 0.4);
+            --accent-gradient: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
             
-            --life-gradient: linear-gradient(90deg, #10b981 0%, #FFD700 50%, #ef4444 100%);
+            --life-gradient: linear-gradient(90deg, #10b981 0%, #f59e0b 50%, #ef4444 100%);
             --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
             
-            --separator: rgba(255, 255, 255, 0.1); /* Чуть заметнее разделители */
+            --separator: rgba(255, 255, 255, 0.08);
             --success: #10b981;
             --danger: #ef4444;
         }
 
-        /* --- FILM GRAIN (ЗЕРНИСТОСТЬ) --- */
+        /* --- ЗЕРНИСТОСТЬ (FILM GRAIN) --- */
         body {
             background-color: var(--bg-color); color: var(--text-primary);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', sans-serif;
             margin: 0; padding: 0; padding-bottom: 100px; padding-top: 50px;
             overflow-x: hidden; -webkit-font-smoothing: antialiased;
             position: relative;
         }
-        /* Шум на фоне (текстура дорогой бумаги/ткани) */
         body::before {
             content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
             pointer-events: none; z-index: -1; opacity: 0.4;
         }
 
-        /* --- ПРЕМИУМ ТИПОГРАФИКА --- */
-        h1, h2, .greeting, .victory-title, .ob-title, .card-title {
-            letter-spacing: -0.04em; /* Сжатый стиль заголовков (Movie Poster) */
-        }
+        /* --- ТИПОГРАФИКА --- */
+        h1, h2, .greeting, .victory-title, .ob-title, .card-title { letter-spacing: -0.03em; }
 
         /* --- PRELOADER --- */
         #preloader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 9999; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s ease, visibility 0.5s; }
         .loader-icon { font-size: 60px; animation: pulse 1.5s infinite; filter: drop-shadow(0 0 20px var(--accent-glow)); }
 
         /* --- АНИМАЦИИ --- */
-        .card, .nav-item, .main-btn, .toggle-btn, .task-add-btn, .battle-reset, .vision-card, .menu-item { transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s, background-color 0.2s; cursor: pointer; }
+        .card, .nav-item, .main-btn, .toggle-btn, .task-add-btn, .battle-reset, .vision-card, .menu-item { transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s; cursor: pointer; }
         .card:active, .main-btn:active, .vision-card:active { transform: scale(0.97); }
         
         /* --- HEADER --- */
-        .header { position: fixed; top: 0; left: 0; width: 100%; height: 50px; background: rgba(0, 40, 23, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--separator); display: flex; align-items: center; justify-content: center; z-index: 900; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        .header { position: fixed; top: 0; left: 0; width: 100%; height: 50px; background: rgba(6, 20, 11, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--separator); display: flex; align-items: center; justify-content: center; z-index: 900; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
         .header.visible { opacity: 1; pointer-events: auto; }
         .header h1 { font-size: 16px; font-weight: 700; margin: 0; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent-color); }
 
@@ -88,14 +84,13 @@
         .greeting { font-size: 32px; font-weight: 900; margin-bottom: 5px; text-transform: uppercase; }
         .sub-greeting { color: var(--text-secondary); font-size: 14px; font-weight: 500; letter-spacing: 0.02em; text-transform: uppercase; }
 
-        /* --- WIDGETS (GLASS + BORDER) --- */
+        /* --- КАРТОЧКИ --- */
         .time-card, .battle-card, .progress-card, .quote-card, .menu-list {
             background: var(--card-bg); border-radius: 16px; padding: 20px;
-            margin: 20px 0; border: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 20px 0; border: 1px solid rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
             transition: border-color 0.3s, box-shadow 0.3s;
         }
-        /* Золотая обводка при фокусе/активности */
         .battle-card.all-done { border-color: var(--accent-color); box-shadow: 0 0 20px var(--accent-glow); }
         
         .time-header-row { display: flex; justify-content: space-between; align-items: center; }
@@ -130,7 +125,7 @@
         .battle-progress { height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; margin-top: 20px; overflow: hidden; }
         .battle-fill { height: 100%; background: var(--accent-color); width: 0%; transition: width 0.4s; box-shadow: 0 0 10px var(--accent-glow); }
 
-        /* --- VISION BOARD (GRID) --- */
+        /* --- VISION BOARD --- */
         .vision-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
         .vision-card { aspect-ratio: 1 / 1; background: var(--card-bg); border-radius: 12px; position: relative; overflow: hidden; border: 1px solid var(--separator); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
         .vision-card.filled { border-color: rgba(255,255,255,0.2); }
@@ -144,7 +139,7 @@
         .vision-delete { position: absolute; top: 8px; right: 8px; z-index: 10; background: rgba(0,0,0,0.7); width: 26px; height: 26px; border-radius: 50%; color: var(--danger); display: flex; align-items: center; justify-content: center; font-size: 14px; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.1); }
 
         /* --- VICTORY OVERLAY --- */
-        .victory-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 40, 23, 0.95); z-index: 3000; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.5s; backdrop-filter: blur(10px); }
+        .victory-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(6, 20, 11, 0.95); z-index: 3000; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.5s; backdrop-filter: blur(10px); }
         .victory-overlay.show { opacity: 1; pointer-events: auto; }
         .trophy-anim { font-size: 100px; margin-bottom: 20px; animation: bounce 1.5s infinite alternate; filter: drop-shadow(0 0 60px var(--accent-glow)); }
         @keyframes bounce { from { transform: scale(1); } to { transform: scale(1.1); } }
@@ -171,14 +166,14 @@
         .card.done::after { content: '✓'; position: absolute; top: 12px; right: 12px; background: var(--success); color: #000; font-weight: 800; font-size: 12px; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 5; box-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
         .card-body { padding: 20px; }
         .card-title { font-size: 18px; font-weight: 800; margin-bottom: 8px; line-height: 1.2; letter-spacing: -0.02em; }
-        .badge { display: inline-block; padding: 4px 8px; background: rgba(255, 215, 0, 0.1); color: var(--accent-color); border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.1em; border: 1px solid rgba(255, 215, 0, 0.2); }
+        .badge { display: inline-block; padding: 4px 8px; background: rgba(251, 191, 36, 0.1); color: var(--accent-color); border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.1em; border: 1px solid rgba(251, 191, 36, 0.2); }
         .video-facade { position: relative; padding-bottom: 56.25%; height: 0; background-color: #000; cursor: pointer; }
         .video-cover-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.8; filter: grayscale(30%); transition: filter 0.3s; }
         .card:hover .video-cover-img { filter: grayscale(0%); }
         .play-button { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(5px); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.3); }
         .play-button::after { content: ''; width: 0; height: 0; border-left: 18px solid #fff; border-top: 10px solid transparent; border-bottom: 10px solid transparent; margin-left: 4px; }
 
-        audio { width: 100%; height: 40px; margin-top: 5px; opacity: 0.9; filter: invert(1) hue-rotate(180deg); } /* Dark mode audio */
+        audio { width: 100%; height: 40px; margin-top: 5px; opacity: 0.9; filter: invert(1) hue-rotate(180deg); }
         details { background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid var(--separator); }
         summary { padding: 16px; cursor: pointer; font-weight: 700; color: var(--accent-color); list-style: none; display: flex; justify-content: space-between; align-items: center; text-transform: uppercase; font-size: 14px; letter-spacing: 0.05em; }
         summary::after { content: '+'; font-size: 20px; font-weight: 300; color: #fff; }
@@ -197,13 +192,13 @@
         .menu-item span:first-child { display: flex; align-items: center; gap: 10px; }
 
         /* --- MODAL FIX --- */
-        .modal { display: none !important; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 40, 23, 0.95); z-index: 9999; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .modal { display: none !important; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(6, 20, 11, 0.95); z-index: 9999; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
         .modal.open { display: flex !important; animation: fadeIn 0.3s; }
-        .modal-content { background: #002817; border-radius: 20px; padding: 30px; width: 100%; max-width: 400px; border: 1px solid var(--accent-color); position: relative; box-shadow: 0 0 40px var(--accent-glow); }
+        .modal-content { background: #06140b; border-radius: 20px; padding: 30px; width: 100%; max-width: 400px; border: 1px solid var(--accent-color); position: relative; box-shadow: 0 0 40px var(--accent-glow); }
         .modal-close { position: absolute; top: 20px; right: 20px; font-size: 28px; color: #fff; cursor: pointer; line-height: 1; }
 
         /* --- BOTTOM NAV (GOLD NEON) --- */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 85px; background: rgba(0, 40, 23, 0.9); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-top: 1px solid var(--separator); display: flex; justify-content: space-between; padding: 10px 10px; z-index: 1000; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 85px; background: rgba(6, 20, 11, 0.9); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-top: 1px solid var(--separator); display: flex; justify-content: space-between; padding: 10px 10px; z-index: 1000; }
         .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; color: #666; font-size: 10px; font-weight: 600; width: 20%; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); padding-top: 8px; position: relative; }
         .nav-item svg { width: 24px; height: 24px; margin-bottom: 6px; fill: currentColor; transition: all 0.3s; }
         .nav-item.active { color: var(--accent-color); transform: translateY(-5px); }
@@ -295,8 +290,57 @@
         <div class="card" id="item-audio1"><div class="card-body"><span class="badge">Аудио</span><div class="card-title">🎙 Окружение</div><audio controls onplay="trackProgress('audio1')"><source src="https://dl.dropboxusercontent.com/scl/fi/m3z94htt3v3ttu3z7agsr/voice1.mp3?rlkey=her5gtxpmpjfprzdyndhaxnk3" type="audio/mpeg"></audio></div></div>
         <div class="card" id="item-audio2"><div class="card-body"><span class="badge">Аудио</span><div class="card-title">🎙 Отдых</div><audio controls onplay="trackProgress('audio2')"><source src="https://dl.dropboxusercontent.com/scl/fi/1rgpu09you9nmkq1eke9s/voice2.mp3?rlkey=p8z9xs4wq3ba7jsk6fqszg4o6" type="audio/mpeg"></audio></div></div>
         <div class="section-header">ГАЙДЫ</div>
-        <div class="card" id="item-text1"><div class="card-body"><span class="badge">Стратегия</span><div class="card-title">Не сливай энергию</div><details ontoggle="if(this.open) trackProgress('text1')"><summary>Читать</summary><div class="text-content">Представь ситуацию:<br><br><ul><li>Ты приехал на заправку, оплатил ее и 90% топлива ты сливаешь на асфальт, не в бак.</li></ul><i>Чувствуешь? Не приятно...</i><br><br><b>Так вот ты машина.</b> В начале дня ты полон энергии, но тратишь ее не на те вещи.<br><br><b>Сделайте зависимость стимулом.</b></div></details></div></div>
-        <div class="card" id="item-text2"><div class="card-body"><span class="badge">Связи</span><div class="card-title">Как обзавестись связями</div><details ontoggle="if(this.open) trackProgress('text2')"><summary>Читать</summary><div class="text-content">Тут тонкая грань...<br><br><b>Взаимовыгода.</b><br><br>Важно не спрашивать "чем я могу быть полезен" ,а сразу предложить готовое решение.</div></details></div></div>
+        <div class="card" id="item-text1"><div class="card-body"><span class="badge">Стратегия</span><div class="card-title">Не сливай энергию</div><details ontoggle="if(this.open) trackProgress('text1')"><summary>Читать</summary><div class="text-content">
+Представь ситуацию:<br><br>
+<ul><li>Ты приехал на заправку, оплатил ее и 90% топлива ты сливаешь на асфальт, не в бак.</li></ul>
+<i>Чувствуешь? Не приятно, ты ведь заплатил - а  получилось что зря.</i><br><br>
+<b>Так вот ты машина.</b> В начале дня ты полон энергии, но тратишь ее не на те вещи.<br>
+Ты скролишь ленту, др()чишь, выпиваешь и думаешь:<br><br>
+<i>- Окей, 4 часа дня. Еще время есть. Сяду за работу к 5.</i><br>
+Потом в 5 ты решил позвонить кентам, разговор затянулся и выходит что уже 7 часов.<br><br>
+Как так? Я же не давно, вроде бы, встал с кровати. Ты заставляешь себя сесть работать, но фокуса уже нет. Делаешь базовые задачи в работе, может даже не все. А может вообще создаешь видимость работы, для того чтобы “искусственно” заставить не винить себя.<br><br>
+<span class="highlight">Какой вывод?</span><br>
+<ul>
+    <li>20% забрал тик ток</li>
+    <li>30% забрало по?но</li>
+    <li>30% ты отдал на пустой разговор с друзьями</li>
+    <li>10% забрали рутинные дела</li>
+    <li><b>10% осталось</b></li>
+</ul>
+<br>
++ не закрытый день<br>
++ не сдвиг с места<br>
++ план переноситься на завтра<br>
++ много всякой негативной залупы, которую перечисляя быстрее загонишь себя в депрессию<br><br>
+Ты думаешь, что я описал стандартный базовый пример неудачника - который все приводят чтобы запугать вас. Но на самом деле все это не работает.<br><br>
+Никто не считает себя таким, но почему то в конце дня испытывает злость на себя и чувство слабости.<br><br>
+У каждого свои отвлечения, суть в том что они  есть. Соблазны у каждого - суть в том, чтобы их сконтролировать<br><br>
+<b>- Как?</b><br>
+Не убирать их навсегда, а временно. Пока ты не сделаешь то то то то…<br><br>
+Не покуришь сигарету, пока не закроешь сделку<br>
+Не посмотришь фильм, пока не закроешь дневной план<br>
+и тд<br><br>
+Или цель: Купить мотоцикл<br><br>
+<i>”я не буду скачивать тик ток, инсту (если не нужно для работы) пока не куплю мотоцик”</i><br><br>
+<b>Сделайте зависимость стимулом.</b>
+        </div></details></div></div>
+        <div class="card" id="item-text2"><div class="card-body"><span class="badge">Связи</span><div class="card-title">Как обзавестись связями</div><details ontoggle="if(this.open) trackProgress('text2')"><summary>Читать</summary><div class="text-content">
+Тут тонкая грань между постоянным общением, где я рассказывал что не нужно навязываться и искать целенаправленно.<br><br>
+Тут мы говорим про построение связей с уже успешными людьми в вашей нише для получение опыта и информации.<br>
+<b>Взаимовыгода.</b><br><br>
+Вы должны предложить человеку что то ценное, чтобы он тоже получил хоть и минимальный но импакт. Ведь если хотите созвониться/встретиться/списаться с человеком выше вас по рангу, вам нужно его заинтересовать<br><br>
+<span class="highlight">- как это сделать?</span><br><br>
+Важно не спрашивать "чем я могу быть полезен" ,а сразу предложить готовое решение:<br>
+<b>Пример:</b><br><br>
+Если у вас есть подписчики в инсте/тг можете предложить рекламу сервиса, бизнеса в замен разговора<br>
+Вот и прелесть медийки, самый простой способ<br><br>
+В других случаях нужно отталкиваться от вашего навыка и предлагать возможно вариант улучшения бизнеса человека, с которым хотите пообщаться или доработать что то.<br><br>
+Суть в том, чтобы не давать ощущение "бесплатной работы" человеку<br><br>
+<b>Шаблон сообщения:</b><br>
+<i>«Иван, добрый день! Я сейчас масштабирую свой проект и столкнулся с вопросом [вопрос]. Ваш опыт мне очень полезен<br>
+Понимаю ценность вашего времени, поэтому предлагаю сделать рекламную интеграцию вашего продукта в моем инстаграмме (10к лояльной аудитории, охваты в сторис [цифра]). Уверен, вашему бизнесу будет полезен этот приток лидов.<br>
+Найдется пол часа  для короткого созвона/общения)»</i>
+        </div></details></div></div>
     </div>
 
     <div id="tab-vision" class="tab-content">
@@ -317,7 +361,7 @@
             <div class="menu-item" onclick="openModal()"><span>ℹ️ О сути (Манифест)</span><span class="arrow">Читать</span></div>
             <div class="menu-item" onclick="resetProgress()"><span style="color: var(--danger)">🔄 Начать заново (Сброс)</span><span class="arrow">⟳</span></div>
         </div>
-        <div style="text-align: center; margin-top: 30px; color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700;">Версия 18.2 (Emerald & Gold Luxury)</div>
+        <div style="text-align: center; margin-top: 30px; color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700;">Версия 19.0 (Gold Standard)</div>
     </div>
 
     <div class="modal" id="about-modal">
@@ -327,9 +371,9 @@
             <div style="line-height:1.6; color: #d1d1d6; font-size: 15px;">
                 Ты здесь не для того, чтобы учиться. <br><b>Ты здесь, чтобы получать.</b><br><br>
                 Этот проект — твой личный чит-код к реальности. Мы убрали всё лишнее, чтобы ты сразу получил доступ к ресурсам:<br><br>
-                • <b style="color:var(--accent-color)">Ясный ум</b> — когда другие паникуют.<br>
-                • <b style="color:var(--accent-color)">Энергия</b> — когда другие выгорают.<br>
-                • <b style="color:var(--accent-color)">Влияние</b> — когда другие просят.<br><br>
+                • <b style="color:#fff">Ясный ум</b> — когда другие паникуют.<br>
+                • <b style="color:#fff">Энергия</b> — когда другие выгорают.<br>
+                • <b style="color:#fff">Влияние</b> — когда другие просят.<br><br>
                 <span class="highlight">Просто забирай инструменты.</span> Результат уже заложен в Систему.
             </div>
         </div>
@@ -347,7 +391,7 @@
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.ready(); tg.expand(); tg.setHeaderColor('#002817'); tg.setBackgroundColor('#002817');
+        tg.ready(); tg.expand(); tg.setHeaderColor('#06140b'); tg.setBackgroundColor('#06140b');
 
         // PRELOADER
         window.addEventListener('load', () => { setTimeout(() => { document.getElementById('preloader').style.opacity = '0'; setTimeout(() => document.getElementById('preloader').style.visibility = 'hidden', 500); }, 800); });
