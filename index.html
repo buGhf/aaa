@@ -7,24 +7,26 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
-        /* --- БАЗА И ЦВЕТА --- */
+        /* --- БАЗА И ЦВЕТА (ROLEX: EMERALD, GOLD, STEEL) --- */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         :root {
-            --bg-dark: #020804; 
-            --bg-light: #0a2e1e;
+            /* ФОН: Глубокий, холодный изумруд (почти черный) */
+            --bg-dark: #010a05; 
+            --bg-light: #051f12;
             
-            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-bg: rgba(255, 255, 255, 0.04); /* Чистое стекло */
             --text-primary: #ffffff;
-            --text-secondary: #9ca3af;
+            --text-secondary: rgba(255, 255, 255, 0.6); /* Цвет "Сталь" вместо серого */
             
-            --accent-color: #fbbf24;
-            --accent-glow: rgba(251, 191, 36, 0.4);
-            --accent-gradient: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+            /* АКЦЕНТ: Чистое Золото */
+            --accent-color: #FFD700;
+            --accent-glow: rgba(255, 215, 0, 0.3); /* Легкое свечение */
+            --accent-gradient: linear-gradient(135deg, #FFD700 0%, #FDB931 100%);
             
-            --life-gradient: linear-gradient(90deg, #10b981 0%, #f59e0b 50%, #ef4444 100%);
+            --life-gradient: linear-gradient(90deg, #10b981 0%, #FFD700 50%, #ef4444 100%);
             --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
             
             --separator: rgba(255, 255, 255, 0.08);
@@ -33,7 +35,7 @@
         }
 
         body {
-            /* Убираем градиент с body, ставим просто темный цвет, чтобы не было белых вспышек */
+            /* Фон без градиентов на body, чтобы не было мерцания */
             background-color: var(--bg-dark);
             color: var(--text-primary);
             font-family: 'Inter', sans-serif;
@@ -41,25 +43,24 @@
             overflow-x: hidden; -webkit-font-smoothing: antialiased;
         }
 
-        /* --- НОВЫЙ ФОНОВЫЙ СЛОЙ (FIXED) --- */
-        /* Это решает проблему с миганием */
+        /* ОТДЕЛЬНЫЙ СЛОЙ ФОНА (FIXED) - Глубина и Виньетка */
         .app-background {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; /* Позади всего */
-            background: radial-gradient(120% 120% at 50% 20%, var(--bg-light) 0%, var(--bg-dark) 100%);
+            z-index: -1;
+            background: radial-gradient(100% 100% at 50% 0%, var(--bg-light) 0%, var(--bg-dark) 100%);
         }
-        /* Шум поверх фона */
+        /* ШУМ (Зернистость) */
         .app-background::after {
             content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
-            opacity: 0.5; pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+            opacity: 0.6; pointer-events: none;
         }
 
         /* --- ТИПОГРАФИКА --- */
         h1, h2, .greeting, .victory-title, .ob-title, .card-title { letter-spacing: -0.02em; }
 
         /* --- PRELOADER --- */
-        #preloader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #020804; z-index: 9999; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s ease, visibility 0.5s; }
+        #preloader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #010a05; z-index: 9999; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s ease, visibility 0.5s; }
         .loader-icon { font-size: 60px; animation: pulse 1.5s infinite; filter: drop-shadow(0 0 20px var(--accent-glow)); }
 
         /* --- АНИМАЦИИ --- */
@@ -67,16 +68,16 @@
         .card:active, .main-btn:active, .vision-card:active { transform: scale(0.97); }
         
         /* --- HEADER --- */
-        .header { position: fixed; top: 0; left: 0; width: 100%; height: 50px; background: rgba(2, 8, 4, 0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--separator); display: flex; align-items: center; justify-content: center; z-index: 900; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        .header { position: fixed; top: 0; left: 0; width: 100%; height: 50px; background: rgba(1, 10, 5, 0.9); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--separator); display: flex; align-items: center; justify-content: center; z-index: 900; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
         .header.visible { opacity: 1; pointer-events: auto; }
-        .header h1 { font-size: 17px; font-weight: 600; margin: 0; color: var(--accent-color); }
+        .header h1 { font-size: 17px; font-weight: 600; margin: 0; color: var(--accent-color); text-transform: uppercase; letter-spacing: 0.05em; font-size: 14px;}
 
-        .tab-content { display: none; padding: 20px 16px; animation: fadeIn 0.3s ease; /* Упростил анимацию для скорости */ }
+        .tab-content { display: none; padding: 20px 16px; animation: fadeIn 0.3s ease; }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         /* --- ONBOARDING --- */
-        .onboarding-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #020804; z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; transition: opacity 0.5s ease; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E"); }
+        .onboarding-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #010a05; z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; transition: opacity 0.5s ease; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E"); }
         .onboarding-overlay.hidden { opacity: 0; pointer-events: none; }
         .slide { display: none; animation: fadeIn 0.5s; flex-direction: column; align-items: center; height: 100%; justify-content: center; }
         .slide.active { display: flex; }
@@ -96,7 +97,7 @@
         /* --- КАРТОЧКИ --- */
         .time-card, .battle-card, .progress-card, .quote-card, .menu-list {
             background: var(--card-bg); border-radius: 16px; padding: 20px;
-            margin: 20px 0; border: 1px solid rgba(255, 255, 255, 0.08);
+            margin: 20px 0; border: 1px solid var(--separator);
             backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
             transition: border-color 0.3s, box-shadow 0.3s;
         }
@@ -148,7 +149,7 @@
         .vision-delete { position: absolute; top: 8px; right: 8px; z-index: 10; background: rgba(0,0,0,0.7); width: 26px; height: 26px; border-radius: 50%; color: var(--danger); display: flex; align-items: center; justify-content: center; font-size: 14px; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.1); }
 
         /* --- VICTORY OVERLAY --- */
-        .victory-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 8, 4, 0.95); z-index: 3000; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.5s; backdrop-filter: blur(10px); }
+        .victory-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(1, 10, 5, 0.95); z-index: 3000; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.5s; backdrop-filter: blur(10px); }
         .victory-overlay.show { opacity: 1; pointer-events: auto; }
         .trophy-anim { font-size: 100px; margin-bottom: 20px; animation: bounce 1.5s infinite alternate; filter: drop-shadow(0 0 60px var(--accent-glow)); }
         @keyframes bounce { from { transform: scale(1); } to { transform: scale(1.1); } }
@@ -175,7 +176,7 @@
         .card.done::after { content: '✓'; position: absolute; top: 12px; right: 12px; background: var(--success); color: #000; font-weight: 800; font-size: 12px; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 5; box-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
         .card-body { padding: 20px; }
         .card-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; line-height: 1.2; }
-        .badge { display: inline-block; padding: 4px 8px; background: rgba(251, 191, 36, 0.1); color: var(--accent-color); border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.05em; border: 1px solid rgba(251, 191, 36, 0.2); }
+        .badge { display: inline-block; padding: 4px 8px; background: rgba(255, 215, 0, 0.1); color: var(--accent-color); border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.05em; border: 1px solid rgba(255, 215, 0, 0.2); }
         .video-facade { position: relative; padding-bottom: 56.25%; height: 0; background-color: #000; cursor: pointer; }
         .video-cover-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.8; filter: grayscale(30%); transition: filter 0.3s; }
         .card:hover .video-cover-img { filter: grayscale(0%); }
@@ -201,18 +202,48 @@
         .menu-item span:first-child { display: flex; align-items: center; gap: 10px; }
 
         /* --- MODAL FIX --- */
-        .modal { display: none !important; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 8, 4, 0.95); z-index: 9999; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .modal { display: none !important; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(1, 10, 5, 0.95); z-index: 9999; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
         .modal.open { display: flex !important; animation: fadeIn 0.3s; }
-        .modal-content { background: #06140b; border-radius: 20px; padding: 30px; width: 100%; max-width: 400px; border: 1px solid var(--accent-color); position: relative; box-shadow: 0 0 40px var(--accent-glow); }
+        .modal-content { background: #010a05; border-radius: 20px; padding: 30px; width: 100%; max-width: 400px; border: 1px solid var(--accent-color); position: relative; box-shadow: 0 0 40px var(--accent-glow); }
         .modal-close { position: absolute; top: 20px; right: 20px; font-size: 28px; color: #fff; cursor: pointer; line-height: 1; }
 
-        /* --- BOTTOM NAV (GOLD NEON) --- */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 85px; background: rgba(2, 8, 4, 0.9); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-top: 1px solid var(--separator); display: flex; justify-content: space-between; padding: 10px 10px; z-index: 1000; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; color: #666; font-size: 10px; font-weight: 600; width: 20%; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); padding-top: 8px; position: relative; }
-        .nav-item svg { width: 24px; height: 24px; margin-bottom: 6px; fill: currentColor; transition: all 0.3s; }
-        .nav-item.active { color: var(--accent-color); transform: translateY(-5px); }
-        .nav-item.active svg { fill: var(--accent-color); filter: drop-shadow(0 0 8px var(--accent-glow)); }
-        .nav-item.active::after { content: ''; position: absolute; bottom: 5px; width: 4px; height: 4px; background: var(--accent-color); border-radius: 50%; box-shadow: 0 0 10px var(--accent-color); animation: fadeIn 0.3s; }
+        /* --- BOTTOM NAV (CLEAN LUXURY) --- */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 85px;
+            /* Фон меню: Почти черный, матовый, чуть прозрачный */
+            background: rgba(2, 8, 4, 0.95);
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex; justify-content: space-between; padding: 10px 10px; z-index: 1000;
+        }
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+            /* ЦВЕТ "СТАЛЬ" для неактивных иконок (Белый с прозрачностью 40%) */
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 10px; font-weight: 600; width: 20%;
+            cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding-top: 8px; position: relative;
+        }
+        .nav-item svg {
+            width: 24px; height: 24px; margin-bottom: 6px;
+            fill: currentColor; transition: all 0.3s;
+        }
+        
+        /* АКТИВНОЕ СОСТОЯНИЕ (ЗОЛОТО) */
+        .nav-item.active {
+            color: var(--accent-color); /* Золотой текст */
+            transform: translateY(-5px);
+        }
+        .nav-item.active svg {
+            fill: var(--accent-color); /* Золотая иконка */
+            filter: drop-shadow(0 0 10px var(--accent-glow)); /* Золотое свечение */
+        }
+        /* Точка */
+        .nav-item.active::after {
+            content: ''; position: absolute; bottom: 5px; width: 4px; height: 4px;
+            background: var(--accent-color); border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent-color); animation: fadeIn 0.3s;
+        }
 
         .ai-placeholder { text-align: center; padding: 80px 20px; }
         .ai-icon { font-size: 80px; margin-bottom: 30px; display: inline-block; animation: float 3s ease-in-out infinite; filter: drop-shadow(0 0 20px var(--accent-glow)); }
@@ -372,7 +403,7 @@
             <div class="menu-item" onclick="openModal()"><span>ℹ️ О сути (Манифест)</span><span class="arrow">Читать</span></div>
             <div class="menu-item" onclick="resetProgress()"><span style="color: var(--danger)">🔄 Начать заново (Сброс)</span><span class="arrow">⟳</span></div>
         </div>
-        <div style="text-align: center; margin-top: 30px; color: #666; font-size: 12px; letter-spacing: 0.1em; font-weight: 700;">Версия 20.1 (Stable)</div>
+        <div style="text-align: center; margin-top: 30px; color: #666; font-size: 12px; letter-spacing: 0.1em; font-weight: 700;">Версия 20.2 (Clean Luxury)</div>
     </div>
 
     <div class="modal" id="about-modal">
@@ -402,7 +433,7 @@
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.ready(); tg.expand(); tg.setHeaderColor('#06140b'); tg.setBackgroundColor('#06140b');
+        tg.ready(); tg.expand(); tg.setHeaderColor('#010a05'); tg.setBackgroundColor('#010a05');
 
         // PRELOADER
         window.addEventListener('load', () => { setTimeout(() => { document.getElementById('preloader').style.opacity = '0'; setTimeout(() => document.getElementById('preloader').style.visibility = 'hidden', 500); }, 800); });
