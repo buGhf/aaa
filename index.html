@@ -233,7 +233,7 @@
         <div class="slide" id="slide-3">
             <div class="ob-icon">🎯</div>
             <div class="ob-title">Действуй</div>
-            <div class="ob-text">Заполни цели. Закрывай задачи в Боевом отчете. Забирай свои результаты.</div>
+            <div class="ob-text">Заполни цели. Закрывай задачи прямо в приложении. Результаты будут уже в конце дня.</div>
             <div class="ob-dots"><div class="dot"></div><div class="dot"></div><div class="dot active"></div></div>
             <a href="#" onclick="finishOnboarding()" class="main-btn" style="width: 80%;">ВОЙТИ</a>
         </div>
@@ -333,7 +333,7 @@
             <div class="menu-item" onclick="openModal()"><span>ℹ️ О сути (Манифест)</span><span class="arrow">Читать</span></div>
             <div class="menu-item" onclick="resetProgress()"><span style="color: #ff453a">🔄 Начать заново (Сброс)</span><span class="arrow">⟳</span></div>
         </div>
-        <div style="text-align: center; margin-top: 30px; color: #444; font-size: 12px;">Версия 15.0 (Gold)</div>
+        <div style="text-align: center; margin-top: 30px; color: #444; font-size: 12px;">Версия 15.1 (Updated)</div>
     </div>
 
     <input type="file" id="vision-file-input" accept="image/*" style="display: none;">
@@ -459,7 +459,6 @@
         }
         function showVictory() { const overlay = document.getElementById('victory-modal'); overlay.classList.add('show'); tg.HapticFeedback.notificationOccurred('success'); setTimeout(() => { overlay.classList.remove('show'); }, 3000); }
         function shareVictory() {
-            // Открывает диалог "Поделиться" в Telegram
             const text = "Я закрыл день в Системе. А ты? @Ivannote"; 
             const url = "https://t.me/share/url?url=" + encodeURIComponent("https://t.me/Ivannote") + "&text=" + encodeURIComponent(text);
             tg.openTelegramLink(url);
@@ -530,9 +529,9 @@
                 localStorage.removeItem('completedItems');
                 localStorage.removeItem('battleTasks');
                 localStorage.removeItem('userGoals');
-                localStorage.removeItem('onboardingComplete'); // Сброс онбординга
+                localStorage.removeItem('onboardingComplete'); 
                 localStorage.removeItem('timeWidgetHidden');
-                location.reload(); // Перезагрузка для эффекта
+                location.reload(); 
             }
         }
         updateProgressUI();
